@@ -5,7 +5,8 @@ body {
 
 header {
     height: 60px;
-    background: linear-gradient(to right, fuchsia, #6495ed);
+    background: linear-gradient(to right, red,orange,yellow,green,blue,indigo,violet);
+    /* background: linear-gradient(to right, fuchsia, #6495ed); */
 }
 
 h1 {
@@ -22,6 +23,12 @@ button {
     background-color: #6495ed;
     padding: 10px;
     border-radius: 20px;
+    color: black;
+    font-weight: bold;
+}
+
+button:hover {
+    color: white;
 }
 
 #imagecontainer {
@@ -34,4 +41,6 @@ a {
 
 img {
     object-fit: cover;
+    width: 120px;
+    height: 120px;
 }
