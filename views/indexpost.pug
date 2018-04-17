@@ -2,10 +2,11 @@ doctype
 html
   head
     title= title
-  body(style={margin: '0 auto', 'text-align': 'center'})
-    header(style={height: '60px', 'background-color': '#6495ed'})
-        h1(style={color: '#ffffff', 'font-size': '50px', 'font-family': 'fantasy'}) KenzieGram
+    link(rel='stylesheet', href='style.css', type='text/css')
+  body
+    header
+        h1 KenzieGram
         h3 Photo Uploaded!
-        a(href='/' style={'font-weight': 'bold'}) Back
-        div(style={'margin-top': '40px'})
+        a(href='/') Back
+        div(id='imagecontainer')
             img(src='uploads/'+imagename)

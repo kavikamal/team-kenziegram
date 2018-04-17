@@ -2,15 +2,16 @@ doctype
 html
   head
     title= title
-  body(style={margin: '0 auto', 'text-align': 'center'})
-    header(style={height: '60px', 'background-color': '#6495ed'})
-        h1(style={color: '#ffffff', 'font-size': '50px', 'font-family': 'fantasy'}) KenzieGram
-    form(style={'margin-top': '20px'} method='post' action='http://localhost:3000/upload' enctype='multipart/form-data')
+    link(rel='stylesheet', href='style.css', type='text/css')
+  body
+    header
+        h1 KenzieGram
+    form(method='post' action='http://localhost:3000/upload' enctype='multipart/form-data')
         div
             label(for='file') Choose a File:
             input(type='file' id='file' name='myFile')
             button Upload
-    div(style={'margin-top': '40px'})
+    div(id='imagecontainer')
         each image in arrayofimages
             div
                 img(src='uploads/'+image)

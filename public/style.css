@@ -1,0 +1,37 @@
+body {
+    margin: 0 auto;
+    text-align: center;
+}
+
+header {
+    height: 60px;
+    background: linear-gradient(to right, fuchsia, #6495ed);
+}
+
+h1 {
+    color: #ffffff;
+    font-size: 50px; 
+    font-family: fantasy;
+}
+
+form {
+    margin-top: 20px;
+}
+
+button {
+    background-color: #6495ed;
+    padding: 10px;
+    border-radius: 20px;
+}
+
+#imagecontainer {
+    margin-top: 40px;
+}
+
+a {
+    font-weight: bold;
+}
+
+img {
+    object-fit: cover;
+}
