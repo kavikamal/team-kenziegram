@@ -6,7 +6,7 @@ html
   body
     header
         h1 KenzieGram
-    form(method='post' action='http://localhost:3000/upload' enctype='multipart/form-data')
+    form(method='post' action='/upload' enctype='multipart/form-data')
         div
             label(for='file') Choose a File:
             input(type='file' id='file' name='myFile')
@@ -15,3 +15,4 @@ html
         each image in arrayofimages
             div
                 img(src='uploads/'+image)
+    script(src='main.js')
