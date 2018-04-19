@@ -6,11 +6,12 @@ html
   body
     header
         h1 KenzieGram
-    form(method='post' action='/upload' enctype='multipart/form-data')
+    div(id='message')
+    form(method='post' action='/upload' onsubmit='return validateForm()' enctype='multipart/form-data')
         div
             label(for='file') Choose a File:&nbsp&nbsp
             input(type='file' id='file' name='myFile')
-            button Upload
+            button(id='uploadBtn') Upload
     div(id='imagecontainer')
         each image in arrayofimages
             div

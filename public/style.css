@@ -44,3 +44,10 @@ img {
     width: 120px;
     height: 120px;
 }
+
+#message {
+    height: 25px;
+    color: red;
+    font-weight: bolder;
+    margin-top: 20px;
+}
