@@ -2,6 +2,8 @@ const imageContainerDiv = document.getElementById("imagecontainer");
 let latestImages = [{timestamp: 0}];
 let maxTimestamp = Date.now();
 let timerID;
+let attempts = 0;
+const maxAttempts = 2;
 
 function validateForm(){
     let filename = document.getElementById('file').value;
@@ -44,21 +46,19 @@ function fetchImages() {
         // timestamp is 0 when no new images are returned 
         if (data.timestamp !== 0) {
             maxTimestamp = data.timestamp;
-        }
-        
+        }  
         // Poll for new images every 5 seconds
         timerID = setTimeout(fetchImages, 5000);
     })
     .catch(error => {
-        console.log("An error has occurred when attempting to Fetch:", error)
-        // alert("In Catch: Connection Failure 1!");
-        // try { 
-        //     fetchImages();
-        // } catch(err){
-        //     alert("Second attempt: Connection Failure!");
-        // }
-     
-        
+        console.log("An error has occurred when attempting to Fetch:", error);
+        attempts++;
+        if (attempts < maxAttempts){
+            fetchImages();
+        } else {
+            setMessage("Connection Lost");
+            clearTimeout(timerID);
+        }        
     })
 
 }
