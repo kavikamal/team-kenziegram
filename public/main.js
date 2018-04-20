@@ -5,6 +5,7 @@ let timerID;
 let attempts = 0;
 const maxAttempts = 2;
 
+// Prevents the form from submitting without an image being selected first
 function validateForm(){
     let filename = document.getElementById('file').value;
     if (filename === ""){
@@ -13,18 +14,20 @@ function validateForm(){
     }
 }
 
+// Displays message on main page
 function setMessage(str){
     let messageEl = document.getElementById("message");
     messageEl.innerHTML = str;
 }
 
-
-function appendImage(anImg) {
+// Adds new image to the top of the main page
+function prependImage(anImg) {
     latestImages.push(anImg);
     imageContainerDiv.innerHTML =
       `<div><img src="uploads/${anImg}"></div>` + imageContainerDiv.innerHTML;
 }
 
+//  Gets the newest images loaded on the server after a specified timestamp
 function fetchImages() {
     const postRequestOptions = {
         method: "POST",
@@ -40,7 +43,7 @@ function fetchImages() {
         // Loop through images and display 
         for(let i = 0; i < data.images.length; i++){ 
            let anImg = data.images[i];
-           appendImage(anImg);
+           prependImage(anImg);
         }
         // Set maxTimestamp 
         // timestamp is 0 when no new images are returned 
