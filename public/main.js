@@ -39,7 +39,9 @@ function fetchImages() {
 
     fetch('/latest', postRequestOptions)
     .then(response => response.json())
-    .then(data => {      
+    .then(data => {
+        // Reset attempts so that we can keep track of two successive failed attempts  
+        attempts = 0;   
         // Loop through images and display 
         for(let i = 0; i < data.images.length; i++){ 
            let anImg = data.images[i];
@@ -57,7 +59,7 @@ function fetchImages() {
         console.log("An error has occurred when attempting to Fetch:", error);
         attempts++;
         if (attempts < maxAttempts){
-            fetchImages();
+            timerID = setTimeout(fetchImages, 5000);
         } else {
             setMessage("Connection Lost");
             clearTimeout(timerID);
