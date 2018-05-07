@@ -20,6 +20,13 @@ const path = './public/uploads';
 const items = [];
 let maxTimestamp = 0;
 
+// Connection to mongoDB
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error: '));
+
+// Define Schema
+
+
 // Renders the main page along with all the images
 app.get('/', function (req, res) {  
     fs.readdir(path, function(err, items) {
