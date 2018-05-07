@@ -48,7 +48,7 @@ let feedSchema = new Schema({
     posts: [String]
 });
 
-// Compile a User and Feed models from the schema
+// Compile User and Feed models from the schemas
 var User = mongoose.model('User', userSchema);
 var Feed = mongoose.model('Feed', feedSchema);
 
