@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const fs = require('fs');
+const mongoose = require('mongoose');   
 const upload = multer({dest: 'public/uploads/'});
 
 const app = express();
@@ -10,6 +11,10 @@ app.use(express.json());
 app.set('views', './views');
 app.set('view engine', 'pug');
 
+const dbName = 'xforcekenziegram';
+const DB_USER = 'admin';
+const DB_PASSWORD = 'admin';
+const DB_URI = 'ds217350.mlab.com:17350';
 const PORT = process.env.PORT || 3000;
 const path = './public/uploads';
 const items = [];
@@ -52,5 +57,8 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
     res.render('indexpost.pug',{title:'KenzieGram',imagename: req.file.filename});
   })
 
-app.listen(PORT);
+app.listen(PORT, () => {
+    mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
+    console.log(`listening at port ${PORT}`);
+})
 
