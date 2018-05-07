@@ -24,8 +24,33 @@ let maxTimestamp = 0;
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error: '));
 
-// Define Schema
+// Define Schemas 
+const Schema = mongoose.Schema;
+let userSchema = new Schema({
+    user: {
+        name: String,
+        profilePic: { data: Buffer, contentType: String },
+        messages: [{
+            name: String,
+            message: String,
+            timestamp: Number,
+        }],
+        posts: [{
+            image: { data: Buffer, contentType: String } ,
+            timestamp: Number,
+            user: String,
+            caption: String,
+            comments: [String],
+        }]
+    }
+});
+let feedSchema = new Schema({
+    posts: [String]
+});
 
+// Compile a User and Feed models from the schema
+var User = mongoose.model('User', userSchema);
+var Feed = mongoose.model('Feed', feedSchema);
 
 // Renders the main page along with all the images
 app.get('/', function (req, res) {  
