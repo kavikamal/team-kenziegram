@@ -2,18 +2,18 @@ const express = require('express');
 const multer = require('multer');
 const fs = require('fs');
 const upload = multer({dest: 'public/uploads/'});
-const port = 3000;
-const app = express();
 
+const app = express();
+app.use(express.static('public'));
+app.use(express.json());
+
+app.set('views', './views');
+app.set('view engine', 'pug');
+
+const PORT = process.env.PORT || 3000;
 const path = './public/uploads';
 const items = [];
 let maxTimestamp = 0;
-
-
-app.use(express.static('public'));
-app.use(express.json());
-app.set('views', './views');
-app.set('view engine', 'pug');
 
 // Renders the main page along with all the images
 app.get('/', function (req, res) {  
@@ -52,5 +52,5 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
     res.render('indexpost.pug',{title:'KenzieGram',imagename: req.file.filename});
   })
 
-app.listen(port);
+app.listen(PORT);
 
