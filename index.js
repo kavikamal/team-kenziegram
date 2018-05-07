@@ -40,12 +40,12 @@ let userSchema = new Schema({
             timestamp: Number,
             user: String,
             caption: String,
-            comments: [String],
+            comments: Array,
         }]
     }
 });
 let feedSchema = new Schema({
-    posts: [String]
+    posts: Array
 });
 
 // Compile User and Feed models from the schemas
