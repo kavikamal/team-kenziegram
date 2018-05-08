@@ -21,13 +21,6 @@ const path = './public/uploads';
 const items = [];
 let maxTimestamp = 0;
 
-const theOnlyUser = {
-    name: "",
-    profilePic: "",
-    messages: [],
-    posts: []
-}
-
 // Connection to mongoDB
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error: '));
@@ -69,6 +62,10 @@ app.get('/register', (req, res) => {
     res.render('signup')
 })
 
+app.get('/chat', (req, res) => {
+    res.render('chat')
+})
+
 // Gets the latest images uploaded after a client-specified timestamp
 app.post('/latest', function (req, res, next) {
     const latestImages = [];
@@ -95,7 +92,7 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
     // req.file is the `myFile` file
     // req.body will hold the text fields, if there were any
     items.push(req.file.filename);
-    User.findByIdAndUpdate(`{_id: ${userID}}`)
+    User.find({ name: "admin" })
     res.render('indexpost.pug',{title:'KenzieGram',imagename: req.file.filename});
   })
 
@@ -124,8 +121,8 @@ app.post('/createProfile', function (req, res) {
 });
 
 app.listen(PORT, () => {
-    // mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
-    mongoose.connect('mongodb://localhost/xforcekenzigram')
+    mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
+    // mongoose.connect('mongodb://localhost/xforcekenzigram')
     console.log(`listening at port ${PORT}`);
 })
 

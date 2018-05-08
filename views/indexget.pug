@@ -1,12 +1,14 @@
 doctype
 html
-  head
+  include includes/header.pug
     title= title
     link(rel='stylesheet', href='style.css', type='text/css')
   body
     header
         h1 KenzieGram
     div(id="message")
+    #chatDiv
+         button(onclick="window.location.href='http://localhost:3000/chat'")
     form(method='post' action='/upload' onsubmit='return validateForm()' enctype='multipart/form-data')
         div
             label(for='file') Choose a File:&nbsp&nbsp
