@@ -7,6 +7,7 @@ const upload = multer({dest: 'public/uploads/'});
 const app = express();
 app.use(express.static('public'));
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 app.set('views', './views');
 app.set('view engine', 'pug');
@@ -27,22 +28,20 @@ db.on('error', console.error.bind(console, 'connection error: '));
 // Define Schemas 
 const Schema = mongoose.Schema;
 let userSchema = new Schema({
-    user: {
         name: String,
-        profilePic: { data: Buffer, contentType: String },
+        profilePic: String,
         messages: [{
             name: String,
             message: String,
             timestamp: Number,
         }],
         posts: [{
-            image: { data: Buffer, contentType: String } ,
+            image: String,
             timestamp: Number,
             user: String,
             caption: String,
             comments: [String],
         }]
-    }
 });
 let feedSchema = new Schema({
     posts: [String]
@@ -54,10 +53,13 @@ var Feed = mongoose.model('Feed', feedSchema);
 
 // Renders the main page along with all the images
 app.get('/', function (req, res) {  
-    fs.readdir(path, function(err, items) {
-        console.log(items);    
+    fs.readdir(path, function(err, items) {   
         res.render('indexget.pug',{title: 'KenzieGram', arrayofimages: items});
     });
+})
+
+app.get('/register', (req, res) => {
+    res.render('signup')
 })
 
 // Gets the latest images uploaded after a client-specified timestamp
@@ -89,8 +91,25 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
     res.render('indexpost.pug',{title:'KenzieGram',imagename: req.file.filename});
   })
 
+app.post('/createProfile', function (req, res) {
+    const instance = new User({
+        name: req.body.name,
+        profilePic: req.body.profilePic,
+        messages: [],
+        posts: []
+    });
+
+    console.log(req.body);
+
+    instance.save()
+    //     .then(instance => res.send())
+    //     res.render('indexget.pug',{title: 'KenzieGram', arrayofimages: items});
+
+});
+
 app.listen(PORT, () => {
-    mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
+    // mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
+    mongoose.connect('mongodb://localhost/xforcekenzigram')
     console.log(`listening at port ${PORT}`);
 })
 
