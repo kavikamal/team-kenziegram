@@ -66,6 +66,10 @@ app.get('/chat', (req, res) => {
     res.render('chat')
 })
 
+app.get('/post', (req, res) => {
+    res.render('indexpost')
+})
+
 // Gets the latest images uploaded after a client-specified timestamp
 app.post('/latest', function (req, res, next) {
     const latestImages = [];
@@ -92,7 +96,6 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
     // req.file is the `myFile` file
     // req.body will hold the text fields, if there were any
     items.push(req.file.filename);
-    User.find({ name: "admin" })
     res.render('indexpost.pug',{title:'KenzieGram',imagename: req.file.filename});
   })
 

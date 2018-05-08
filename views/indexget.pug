@@ -2,18 +2,18 @@ doctype
 html
   include includes/header.pug
     title= title
-    link(rel='stylesheet', href='style.css', type='text/css')
+    //- link(rel='stylesheet', href='style.css', type='text/css')
   body
     header
         h1 KenzieGram
     div(id="message")
     #chatDiv
-         button(onclick="window.location.href='http://localhost:3000/chat'")
+         button.btn.orange(onclick="window.location.href='http://localhost:3000/chat'") Check Chat Messages
     form(method='post' action='/upload' onsubmit='return validateForm()' enctype='multipart/form-data')
         div
             label(for='file') Choose a File:&nbsp&nbsp
             input(type='file' id='file' name='myFile')
-            button(id='uploadBtn') Upload
+            button.btn.orange(onclick="window.location.href='http://localhost:3000/post'") Make New Post
     div(id='imagecontainer')
         each image in arrayofimages
             div

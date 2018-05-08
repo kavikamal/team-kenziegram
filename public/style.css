@@ -70,3 +70,11 @@ img {
     height: 100%;
     border-left: 1px solid black
 }
+
+#chatButton {
+    background-color: #6495ed;
+    padding: 10px;
+    border-radius: 20px;
+    color: black;
+    font-weight: bold;
+}
