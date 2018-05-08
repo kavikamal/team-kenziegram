@@ -21,6 +21,13 @@ const path = './public/uploads';
 const items = [];
 let maxTimestamp = 0;
 
+const theOnlyUser = {
+    name: "",
+    profilePic: "",
+    messages: [],
+    posts: []
+}
+
 // Connection to mongoDB
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error: '));
@@ -88,22 +95,31 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
     // req.file is the `myFile` file
     // req.body will hold the text fields, if there were any
     items.push(req.file.filename);
+    User.findByIdAndUpdate(`{_id: ${userID}}`)
     res.render('indexpost.pug',{title:'KenzieGram',imagename: req.file.filename});
   })
 
 app.post('/createProfile', function (req, res) {
     const instance = new User({
-        name: req.body.name,
-        profilePic: req.body.profilePic,
-        messages: [],
-        posts: []
-    });
-
-    console.log(req.body);
+        name: "user",
+        profilePic: "",
+        messages: [{
+            name: "",
+            message: "",
+            timestamp: 0,
+        }],
+        posts: [{
+            image: "String",
+            timestamp: 0,
+            user: "",
+            caption: "",
+            comments: "",
+        }]
+});
 
     instance.save()
-    //     .then(instance => res.send())
-    //     res.render('indexget.pug',{title: 'KenzieGram', arrayofimages: items});
+        .then(instance => res.send())
+        res.render('indexget.pug',{title: 'KenzieGram', arrayofimages: items});
 
 });
 
