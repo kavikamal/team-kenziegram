@@ -1,12 +1,38 @@
 doctype
 html
-  head
-    title= title
-    link(rel='stylesheet', href='style.css', type='text/css')
-  body
-    header
-        h1 KenzieGram
-    h3 Photo Uploaded!
-    a(href='/') Back
-    div(id='imagecontainer')
-      img(src='uploads/'+imagename)
+    include includes/header.pug
+
+    body
+        div(class='container')
+            h1 Make a Post!
+            
+            p= typeof msg != 'undefined' ? msg : ''
+
+            
+            form(method='POST' action='/upload')
+                div.form-group
+                    label(for='caption') Caption:
+                    input#caption.form-control(type='text', placeholder='Oh my gosh, what to say?', name='caption' )
+              
+                div.file-field.input-field
+                    div.btn.orange
+                        span Upload Photo!
+                        input(type="file")
+                    div.file-path-wrapper
+                         input.form-control(class="file-path validate", type="text")
+                    
+                
+                button.btn.btn-primary.orange(type='submit') Create Post
+                
+            br
+            input(class="btn", type="button", value="Go back", onclick="history.back()")
+                
+            input(class="btn", type="button", value="home", onclick="window.location.href='http://localhost:3000'")
+            div(id="images")
+            
+            //- div(id='imagecontainer')
+            //- img(src='uploads/'+imagename)
+
+        script(src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js")
+        script(src="index.js")
