@@ -92,10 +92,10 @@ app.post('/latest', function (req, res, next) {
 })
 
 // Uploads a new images and renders the uploaded page with the new image
-app.post('/upload', upload.single('myFile'), function (req, res, next) {
-    // req.file is the `myFile` file
-    // req.body will hold the text fields, if there were any
-    items.push(req.file.filename);
+app.post('/upload', function (req, res, next) {
+    // // req.file is the `myFile` file
+    // // req.body will hold the text fields, if there were any
+    // items.push(req.file.filename);
     res.render('indexpost.pug',{title:'KenzieGram',imagename: req.file.filename});
   })
 

@@ -9,10 +9,6 @@ html
     div(id="message")
     #chatDiv
          button.btn.orange(onclick="window.location.href='http://localhost:3000/chat'") Check Chat Messages
-    form(method='post' action='/upload' onsubmit='return validateForm()' enctype='multipart/form-data')
-        div
-            label(for='file') Choose a File:&nbsp&nbsp
-            input(type='file' id='file' name='myFile')
             button.btn.orange(onclick="window.location.href='http://localhost:3000/post'") Make New Post
     div(id='imagecontainer')
         each image in arrayofimages
