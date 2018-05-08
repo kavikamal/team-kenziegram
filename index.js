@@ -8,6 +8,7 @@ const gm = require('gm').subClass({ imageMagick: true });
 const app = express();
 app.use(express.static('public'));
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 app.set('views', './views');
 app.set('view engine', 'pug');
@@ -28,20 +29,20 @@ db.on('error', console.error.bind(console, 'connection error: '));
 // Define Schemas 
 const Schema = mongoose.Schema;
 let userSchema = new Schema({
+    name: String,
+    profilePic: String,
+    messages: [{
         name: String,
-        profilePic: String,
-        messages: [{
-            name: String,
-            message: String,
-            timestamp: Number,
-        }],
-        posts: [{
-            image: String,
-            timestamp: Number,
-            user: String,
-            caption: String,
-            comments: Array,
-        }]
+        message: String,
+        timestamp: Number,
+    }],
+    posts: [{
+        image: String,
+        timestamp: Number,
+        user: String,
+        caption: String,
+        comments: Array,
+    }]
 });
 let feedSchema = new Schema({
     posts: Array
@@ -58,6 +59,11 @@ app.get('/', function (req, res) {
         res.render('indexget.pug', { title: 'KenzieGram', arrayofimages: items });
     });
 })
+
+app.get('/register', (req, res) => {
+    res.render('signup.pug')
+})
+
 
 // Gets the latest images uploaded after a client-specified timestamp
 app.post('/latest', function (req, res, next) {
@@ -92,12 +98,29 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
             fs.unlink(`${path}/${req.file.filename}`, err => {
                 if (err) throw err;
                 console.log('Orginal file was Deleted')
-                res.render('indexpost.pug',{ title: 'KenzieGram', imagename: `resized${req.file.filename}` });
+                res.render('indexpost.pug', { title: 'KenzieGram', imagename: `resized${req.file.filename}` });
             })
         })
     // items.push(req.file.filename);
     console.log(req.file.filename)
 })
+
+app.post('/createProfile', function (req, res) {
+    const instance = new User({
+        name: req.body.name,
+        profilePic: req.body.profilePic,
+        messages: [],
+        posts: []
+    });
+
+    console.log(req.body);
+
+    instance.save()
+    .then(instance => res.send())
+    res.render('indexget.pug',{title: 'KenzieGram', arrayofimages: items});
+
+});
+
 
 app.listen(PORT, () => {
     mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
