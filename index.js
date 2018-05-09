@@ -23,6 +23,7 @@ const path = './public/uploads';
 const profilePicPath = './public/profilePictures'
 const items = [];
 let maxTimestamp = 0;
+let userName = "";
 
 // Connection to mongoDB
 var db = mongoose.connection;
@@ -36,14 +37,11 @@ let userSchema = new Schema({
     profilePic: String,
     messages: [{
         name: String,
-
         message: String,
-        timestamp: Number,
     }],
     posts: [{
         image: String,
         timestamp: Number,
-        user: String,
         caption: String,
         comments: Array,
     }]
@@ -65,17 +63,43 @@ app.get('/', function (req, res) {
     });
 })
 
+// Handles and renders requests for the registration/login page
 app.get('/register', (req, res) => {
 
     res.render('signup')
 })
 
+// Handles and renders requests for the chat page
 app.get('/chat', (req, res) => {
     res.render('chat')
 })
 
+// Handles and renders requests for the page where you create new posts
 app.get('/post', (req, res) => {
     res.render('indexpost')
+})
+
+// Distributes chat messages back to the client
+app.get('/messages', (req, res) => {
+    User.find(`"name": ${req.body.userName}`)
+        .then(user => {
+            res.send(user.messages)
+        })
+})
+
+app.post('/login', (req, res) => {
+    Data.find(`"name" : ${req.body.userName}`)
+        .then(user => {
+            res.send(user);
+        })
+})
+
+app.post('/messages', (req, res) => {
+    User.find(`"name" : ${req.body.recipient}`)
+        .then (user => {
+            user.messages.push(req.body.message)
+            user.save()
+        })   
 })
 
 // Gets the latest images uploaded after a client-specified timestamp

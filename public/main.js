@@ -30,6 +30,34 @@ function prependImage(anImg) {
       `<div><img src="uploads/${anImg}"></div>` + imageContainerDiv.innerHTML;
 }
 
+// Adds the messages to the messages div when the sender is clicked
+function appendMessages(msgs) {
+    for (let msg in msgs) {
+    PLACEHOLDER.innerHTML +=
+      `<div class="message"><strong>${msg.name}</strong><br>${msg.message}</div>`;
+    }
+}
+
+// 
+// Should create new Sender divs that also allows you to draw their messages on click
+// Requires changing the placeholder to the name of the div you're appending to
+function appendChatWindows(message) {
+    const newSender = document.createElement('div');
+    const senderMessages = document.createElement('div');
+    newSender.id = message.name
+    let fromUser = document.getElementById('PLACEHOLDER');
+    let messageWindow = document.getElementById('PLACEHOLDER');
+    fromUser.addEventListener('click', getMessages);
+
+    if(!document.getElementById(message.name)) {
+    fromUser.appendChild(newSender);
+    }
+    if(!document.getElementById(`${message.name}Message`)) {
+        senderMessages.id = `${message.name}Messages`;
+        messageWindow.appendChild(senderMessages);
+    }
+}
+
 //  Gets the newest images loaded on the server after a specified timestamp
 function fetchImages() {
     const postRequestOptions = {
@@ -68,7 +96,18 @@ function fetchImages() {
             clearTimeout(timerID);
         }        
     })
+}
 
+// Creates sender divs in chat
+function fetchMessages() {
+    fetch('/messages')
+        .then(response => response.json())
+        .then(data => {
+            for (let message in data.messages) {
+                appendChatSender(message);
+                appendMessages(messages);
+            }
+        })
 }
 
 fetchImages();
