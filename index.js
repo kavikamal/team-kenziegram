@@ -3,6 +3,7 @@ const multer = require('multer');
 const fs = require('fs');
 const mongoose = require('mongoose');
 const upload = multer({ dest: 'public/uploads/' });
+const profilePicUpload = multer({ dest: 'public/profilePictures/'})
 const gm = require('gm').subClass({ imageMagick: true });
 
 const app = express();
@@ -19,6 +20,7 @@ const DB_PASSWORD = 'admin';
 const DB_URI = 'ds217350.mlab.com:17350';
 const PORT = process.env.PORT || 3000;
 const path = './public/uploads';
+const profilePicPath = './public/profilePictures'
 const items = [];
 let maxTimestamp = 0;
 
@@ -96,45 +98,45 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
         .noProfile()
         .compress("JPEG")
         // Resizes to 300x300 with no regard for aspect ratio, removes EXIF data, then compresses the file to . JPEG
-        .write(`${path}/resized${req.file.filename}`, function (err) {
+        .write(`${path}/${req.file.filename}`, function (err) {
             // This creates the new file with our modifications
             if (!err) console.log('Image Resized!')
-            fs.unlink(`${path}/${req.file.filename}`, err => {
-                if (err) throw err;
+            
                 // This deletes the original file
                 console.log('Orginal file was Deleted')
 
                 res.render('indexpost.pug', { title: 'KenzieGram', imagename: `resized${req.file.filename}` });
             })
+            console.log(req.file.filename)
         })
     // items.push(req.file.filename);
-    console.log(req.file.filename)
-})
 
-app.post('/createProfile', function (req, res) {
+app.post('/createProfile', profilePicUpload.single('profilePic'), function (req, res) {
     // The GraphicsMagick module creates a thumbnail image from the uploaded profile picture
-    gm(req.body.profilePic)
-    .thumbnail(25, 25, '!')
-    .noProfile()
-    .compress('JPEG')
-    .quality(85)
-    .write(`./public/profilePictures/${req.body.profilepic}`, function (err) {
-        const instance = new User({
-            name: req.body.name,
-            profilePic: req.body.profilePic,
-            messages: [],
-            posts: []
-        });
-    
-        console.log(req.body);
-        console.log("req.body.profilepic: ", req.body.profilepic);
-    
-        
-        instance.save()
-        .then(instance => res.send())
-        res.render('indexget.pug',{title: 'KenzieGram', arrayofimages: items});
+    gm(`${profilePicPath}/${req.file.filename}`)
+        .resize(25, 25, '!')
+        .noProfile()
+        .compress('JPEG')
+        .quality(85)
+        .write(`${profilePicPath}/${req.file.filename}`, function (err) {
+            if (!err) console.log('Image Resized!')
+            console.log(err)
+            const instance = new User({
+                name: req.body.name,
+                profilePic: `${profilePicPath}/${req.file.filename}`,
+                messages: [],
+                posts: []
+            });
 
-    })
+            console.log(req.body);
+            console.log("req.body.profilepic: ", req.body.profilePic);
+
+
+            instance.save()
+                .then(instance => res.send())
+            res.render('indexget.pug', { title: 'KenzieGram', arrayofimages: items });
+
+        })
 });
 
 

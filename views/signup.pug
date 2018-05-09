@@ -7,7 +7,7 @@ html
             
             p= typeof msg != 'undefined' ? msg : ''
              
-            form(method='POST' action='/createProfile')
+            form(method='POST' action='/createProfile' enctype='multipart/form-data')
                 div.form-group
                     label(for='name') Name:
                     input#name.form-control(type='text', placeholder='username' name='name' require)
