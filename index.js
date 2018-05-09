@@ -90,14 +90,20 @@ app.post('/latest', function (req, res, next) {
 app.post('/upload', upload.single('myFile'), function (req, res, next) {
     // req.file is the `myFile` file
     // req.body will hold the text fields, if there were any
+    // gm starts the graphicsMagick package that edits our uploaded images
     gm(`${path}/${req.file.filename}`)
         .resize(300, 300, '!')
         .noProfile()
+        .compress("JPEG")
+        // Resizes to 300x300 with no regard for aspect ratio, removes EXIF data, then compresses the file to . JPEG
         .write(`${path}/resized${req.file.filename}`, function (err) {
+            // This creates the new file with our modifications
             if (!err) console.log('Image Resized!')
             fs.unlink(`${path}/${req.file.filename}`, err => {
                 if (err) throw err;
+                // This deletes the original file
                 console.log('Orginal file was Deleted')
+
                 res.render('indexpost.pug', { title: 'KenzieGram', imagename: `resized${req.file.filename}` });
             })
         })
