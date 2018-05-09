@@ -36,6 +36,7 @@ let userSchema = new Schema({
     profilePic: String,
     messages: [{
         name: String,
+
         message: String,
         timestamp: Number,
     }],
@@ -46,6 +47,7 @@ let userSchema = new Schema({
         caption: String,
         comments: Array,
     }]
+
 });
 let feedSchema = new Schema({
     posts: Array

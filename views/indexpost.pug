@@ -17,7 +17,7 @@ html
                 div.file-field.input-field
                     div.btn.orange
                         span Upload Photo!
-                        input(type="file" accept="image/*" name="pic")
+                        input(type="file" accept="image/*" name="myFile")
                     div.file-path-wrapper
                          input.form-control(class="file-path validate", type="text")
                     
@@ -29,10 +29,7 @@ html
                 
             input(class="btn", type="button", value="home", onclick="window.location.href='http://localhost:3000'")
             div(id="images")
-            
-            //- div(id='imagecontainer')
-            //- img(src='uploads/'+imagename)
+            br
+            br
 
-        script(src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous")
-        script(src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js")
-        script(src="index.js")
+        include includes/footer.pug
