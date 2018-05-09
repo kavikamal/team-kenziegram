@@ -112,19 +112,29 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
 })
 
 app.post('/createProfile', function (req, res) {
-    const instance = new User({
-        name: req.body.name,
-        profilePic: req.body.profilePic,
-        messages: [],
-        posts: []
-    });
+    // The GraphicsMagick module creates a thumbnail image from the uploaded profile picture
+    gm(req.body.profilePic)
+    .thumbnail(25, 25, '!')
+    .noProfile()
+    .compress('JPEG')
+    .quality(85)
+    .write(`./public/profilePictures/${req.body.profilepic}`, function (err) {
+        const instance = new User({
+            name: req.body.name,
+            profilePic: req.body.profilePic,
+            messages: [],
+            posts: []
+        });
+    
+        console.log(req.body);
+        console.log("req.body.profilepic: ", req.body.profilepic);
+    
+        
+        instance.save()
+        .then(instance => res.send())
+        res.render('indexget.pug',{title: 'KenzieGram', arrayofimages: items});
 
-    console.log(req.body);
-
-    instance.save()
-    .then(instance => res.send())
-    res.render('indexget.pug',{title: 'KenzieGram', arrayofimages: items});
-
+    })
 });
 
 
