@@ -44,6 +44,7 @@ let userSchema = new Schema({
         }]
     }
 });
+
 let feedSchema = new Schema({
     posts: Array
 });
@@ -51,6 +52,7 @@ let feedSchema = new Schema({
 // Compile User and Feed models from the schemas
 var User = mongoose.model('User', userSchema);
 var Feed = mongoose.model('Feed', feedSchema);
+
 
 // Renders the main page along with all the images
 app.get('/', function (req, res) {  
@@ -88,6 +90,37 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
     items.push(req.file.filename);
     res.render('indexpost.pug',{title:'KenzieGram',imagename: req.file.filename});
   })
+
+//Dummy profile Maker
+app.post('/createProfile', function (req, res) {
+
+    const instance = new User({
+        name: "user",
+        profilePic: "",
+        messages: [{
+            name: "",
+            message: "",
+            timestamp: 0,
+        }],
+        posts: [{
+            image: "String",
+            timestamp: 0,
+            user: "",
+            caption: "",
+            comments: "",
+        }]
+    });
+    
+    instance.save()
+        .then(instance => {
+            fs.readdir(path, function (err, items) {
+                res.render('indexget.pug', {
+                    title: 'KenzieGram'
+                });
+            });
+        })
+});
+
 
 app.listen(PORT, () => {
     mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
