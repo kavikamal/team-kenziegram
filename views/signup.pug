@@ -6,19 +6,23 @@ html
             h1 Sign up here!
             
             p= typeof msg != 'undefined' ? msg : ''
+
             
             form(method='POST' action='/createProfile')
                 div.form-group
                     label(for='name') Name:
                     input#name.form-control(type='text', placeholder='username' name='name' require)
+
                 //- div.form-group
                 //-     label(for='email') Email:
                 //-     input#email.form-control(type='email', placeholder='name@email.com' name='email' require)
+
                 div.file-field.input-field
                     div.btn
                         span Upload Profile Picture:
                         input(type="file", name="profilePic")
                     div.file-path-wrapper
+
                          input.form-control(class="file-path validate", type="text")
                     
                 
@@ -30,4 +34,4 @@ html
             input(class="btn", type="button", value="home", onclick="window.location.href='http://localhost:3000'")
             div(id="images")
             
-    
+

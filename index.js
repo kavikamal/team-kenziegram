@@ -1,8 +1,10 @@
 const express = require('express');
 const multer = require('multer');
 const fs = require('fs');
-const mongoose = require('mongoose');   
-const upload = multer({dest: 'public/uploads/'});
+const mongoose = require('mongoose');
+const upload = multer({ dest: 'public/uploads/' });
+const profilePicUpload = multer({ dest: 'public/profilePictures/'})
+const gm = require('gm').subClass({ imageMagick: true });
 
 const app = express();
 app.use(express.static('public'));
@@ -18,6 +20,7 @@ const DB_PASSWORD = 'admin';
 const DB_URI = 'ds217350.mlab.com:17350';
 const PORT = process.env.PORT || 3000;
 const path = './public/uploads';
+const profilePicPath = './public/profilePictures'
 const items = [];
 let maxTimestamp = 0;
 
@@ -28,20 +31,23 @@ db.on('error', console.error.bind(console, 'connection error: '));
 // Define Schemas 
 const Schema = mongoose.Schema;
 let userSchema = new Schema({
+
+    name: String,
+    profilePic: String,
+    messages: [{
         name: String,
-        profilePic: String,
-        messages: [{
-            name: String,
-            message: String,
-            timestamp: Number,
-        }],
-        posts: [{
-            image: String,
-            timestamp: Number,
-            user: String,
-            caption: String,
-            comments: Array,
-        }]
+
+        message: String,
+        timestamp: Number,
+    }],
+    posts: [{
+        image: String,
+        timestamp: Number,
+        user: String,
+        caption: String,
+        comments: Array,
+    }]
+
 });
 let feedSchema = new Schema({
     posts: Array
@@ -55,10 +61,12 @@ var Feed = mongoose.model('Feed', feedSchema);
 app.get('/', function (req, res) {  
     fs.readdir(path, function(err, items) {   
         res.render('indexget.pug',{title: 'KenzieGram', arrayofimages: items});
+
     });
 })
 
 app.get('/register', (req, res) => {
+
     res.render('signup')
 })
 
@@ -74,51 +82,72 @@ app.get('/post', (req, res) => {
 app.post('/latest', function (req, res, next) {
     const latestImages = [];
     const after = req.body.after;
-    
-    fs.readdir(path, function(err, items) {
+
+    fs.readdir(path, function (err, items) {
         // Loops through array of images to check if the modified time of each image
         // is greater than the client specified timestamp that was passed in
         // If so, store the new image(s) to be passed back along with the latest timestamp of all images
-        for (let i=0; i<items.length; i++){
+        for (let i = 0; i < items.length; i++) {
             let modified = fs.statSync(path + '/' + items[i]).mtimeMs;
-            if (modified > after){
+            if (modified > after) {
                 latestImages.push(items[i]);
                 maxTimestamp = modified > maxTimestamp ? modified : maxTimestamp;
             }
         }
-        res.send({images: latestImages, timestamp: maxTimestamp});
+        res.send({ images: latestImages, timestamp: maxTimestamp });
     });
-    
+
 })
 
 // Uploads a new images and renders the uploaded page with the new image
-app.post('/upload', upload.single('pic'), function (req, res, next) {
-    console.log(req.body)
-    res.render('indexpost.pug',{title:'KenzieGram',imagename: req.file.filename});
-  })
+app.post('/upload', upload.single('myFile'), function (req, res, next) {
+    // req.file is the `myFile` file
+    // req.body will hold the text fields, if there were any
+    // gm starts the graphicsMagick package that edits our uploaded images
+    gm(`${path}/${req.file.filename}`)
+        .resize(300, 300, '!')
+        .noProfile()
+        .compress("JPEG")
+        // Resizes to 300x300 with no regard for aspect ratio, removes EXIF data, then compresses the file to . JPEG
+        .write(`${path}/${req.file.filename}`, function (err) {
+            // This creates the new file with our modifications
+            if (!err) console.log('Image Resized!')
+            
+                // This deletes the original file
+                console.log('Orginal file was Deleted')
 
-app.post('/createProfile', function (req, res) {
-    const instance = new User({
-        name: "user",
-        profilePic: "",
-        messages: [{
-            name: "",
-            message: "",
-            timestamp: 0,
-        }],
-        posts: [{
-            image: "String",
-            timestamp: 0,
-            user: "",
-            caption: "",
-            comments: "",
-        }]
-});
+                res.render('indexpost.pug', { title: 'KenzieGram', imagename: `resized${req.file.filename}` });
+            })
+            console.log(req.file.filename)
+        })
+    // items.push(req.file.filename);
 
-    instance.save()
-        .then(instance => res.send())
-        res.render('indexget.pug',{title: 'KenzieGram', arrayofimages: items});
+app.post('/createProfile', profilePicUpload.single('profilePic'), function (req, res) {
+    // The GraphicsMagick module creates a thumbnail image from the uploaded profile picture
+    gm(`${profilePicPath}/${req.file.filename}`)
+        .resize(25, 25, '!')
+        .noProfile()
+        .compress('JPEG')
+        .quality(85)
+        .write(`${profilePicPath}/${req.file.filename}`, function (err) {
+            if (!err) console.log('Image Resized!')
+            console.log(err)
+            const instance = new User({
+                name: req.body.name,
+                profilePic: `${profilePicPath}/${req.file.filename}`,
+                messages: [],
+                posts: []
+            });
 
+            console.log(req.body);
+            console.log("req.body.profilepic: ", req.body.profilePic);
+
+
+            instance.save()
+                .then(instance => res.send())
+            res.render('indexget.pug', { title: 'KenzieGram', arrayofimages: items });
+
+        })
 });
 
 app.listen(PORT, () => {
