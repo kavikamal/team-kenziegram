@@ -3,4 +3,21 @@ head
         meta(name="viewport" content="width=device-width, initial-scale=1.0")
         meta(http-equiv="X-UA-Compatible", content="ie=edge")
         link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css')
-        
+nav
+        div.nav-wrapper
+                a(href="/", class="brand-logo center") Kenziegram
+                a(href="#", data-target="mobile-demo", class="sidenav-trigger") <i class="material-icons">menu</i>
+                ul.right.hide-on-med-and-down
+                        li
+                                a(href="/") home
+                        li
+                                a(href="http://localhost:3000/post") post
+                        li
+                                a(href="http://localhost:3000/chat") chat
+ul#mobile-demo.sidenav
+        li
+                a(href="/") home
+        li
+                a(href="http://localhost:3000/post") post
+        li
+                a(href="http://localhost:3000/chat") chat

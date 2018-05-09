@@ -5,6 +5,9 @@ let timerID;
 let attempts = 0;
 const maxAttempts = 2;
 
+
+
+
 // Prevents the form from submitting without an image being selected first
 function validateForm(){
     let filename = document.getElementById('file').value;
