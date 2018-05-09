@@ -124,17 +124,18 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
 
 app.post('/createProfile', profilePicUpload.single('profilePic'), function (req, res) {
     // The GraphicsMagick module creates a thumbnail image from the uploaded profile picture
-    gm(`${profilePicPath}/${req.file.filename}`)
+    console.log(req.body.profilePic)
+    gm(`${profilePicPath}/${req.body.profilePic}`)
         .resize(25, 25, '!')
         .noProfile()
         .compress('JPEG')
         .quality(85)
-        .write(`${profilePicPath}/${req.file.filename}`, function (err) {
+        .write(`${profilePicPath}/${req.body.profilePic}`, function (err) {
             if (!err) console.log('Image Resized!')
             console.log(err)
             const instance = new User({
                 name: req.body.name,
-                profilePic: `${profilePicPath}/${req.file.filename}`,
+                profilePic: `${profilePicPath}/${req.body.profilePic}`,
                 messages: [],
                 posts: []
             });
