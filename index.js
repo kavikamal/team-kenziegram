@@ -152,8 +152,8 @@ app.post('/createProfile', profilePicUpload.single('profilePic'), function (req,
 });
 
 app.listen(PORT, () => {
-    // mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
-    mongoose.connect('mongodb://localhost/xforcekenzigram')
+    mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
+    // mongoose.connect('mongodb://localhost/xforcekenzigram')
     console.log(`listening at port ${PORT}`);
 })
 
