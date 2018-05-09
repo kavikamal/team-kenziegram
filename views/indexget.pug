@@ -1,17 +1,45 @@
 doctype
 html
-  include includes/header.pug
+    include includes/header.pug
     title= title
-    //- link(rel='stylesheet', href='style.css', type='text/css')
-  body
+    nav
+        div.nav-wrapper
+            a(href="#!", class="brand-logo center") Kenziegram
+            a(href="#", data-target="mobile-demo", class="sidenav-trigger") <i class="material-icons">menu</i>
+            ul.right.hide-on-med-and-down
+                li
+                    a(href="/") home
+                li
+                    a(href="http://localhost:3000/post") post
+                li
+                    a(href="http://localhost:3000/chat") chat
+
+    ul#mobile-demo.sidenav
+        li
+            a(href="/") home
+        li
+            a(href="http://localhost:3000/post") post
+        li
+            a(href="http://localhost:3000/chat") chat
+                
+body
     header
-        h1 KenzieGram
-    div(id="message")
-    #chatDiv
-         button.btn.orange(onclick="window.location.href='http://localhost:3000/chat'") Check Chat Messages
+    br
+    div#message.container.center-align    
             button.btn.orange(onclick="window.location.href='http://localhost:3000/post'") Make New Post
-    div(id='imagecontainer')
-        each image in arrayofimages
-            div
-                img(src='uploads/'+image)
-    script(src='main.js')
+    div.container
+        div.row
+            div.col.s6.offset-s3
+                each image in arrayofimages
+                    div.card.hoverable
+                        div.card-image
+                            img(src='uploads/'+image)
+                            span.card-title User Name
+                        div.card-content
+                            p I am a very simple card. I am good at containing small bits of information.I am convenient because I require little markup to use effectively.
+                        div.card-action
+                            a(href="#")
+    div#message.container.center-align    
+            button.btn.orange(onclick="window.location.href='http://localhost:3000/post'") Make New Post
+    br
+    include includes/footer.pug
