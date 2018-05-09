@@ -31,6 +31,7 @@ db.on('error', console.error.bind(console, 'connection error: '));
 // Define Schemas 
 const Schema = mongoose.Schema;
 let userSchema = new Schema({
+
     name: String,
     profilePic: String,
     messages: [{
@@ -55,17 +56,25 @@ var User = mongoose.model('User', userSchema);
 var Feed = mongoose.model('Feed', feedSchema);
 
 // Renders the main page along with all the images
-app.get('/', function (req, res) {
-    fs.readdir(path, function (err, items) {
-        console.log(items);
-        res.render('indexget.pug', { title: 'KenzieGram', arrayofimages: items });
+app.get('/', function (req, res) {  
+    fs.readdir(path, function(err, items) {   
+        res.render('indexget.pug',{title: 'KenzieGram', arrayofimages: items});
+
     });
 })
 
 app.get('/register', (req, res) => {
-    res.render('signup.pug')
+
+    res.render('signup')
 })
 
+app.get('/chat', (req, res) => {
+    res.render('chat')
+})
+
+app.get('/post', (req, res) => {
+    res.render('indexpost')
+})
 
 // Gets the latest images uploaded after a client-specified timestamp
 app.post('/latest', function (req, res, next) {
@@ -139,9 +148,9 @@ app.post('/createProfile', profilePicUpload.single('profilePic'), function (req,
         })
 });
 
-
 app.listen(PORT, () => {
-    mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
+    // mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
+    mongoose.connect('mongodb://localhost/xforcekenzigram')
     console.log(`listening at port ${PORT}`);
 })
 
