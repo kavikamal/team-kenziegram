@@ -9,7 +9,7 @@ html
             p= typeof msg != 'undefined' ? msg : ''
 
             
-            form(method='POST' action='/upload')
+            form(method='POST' action='/upload' enctype="multipart/form-data")
                 div.form-group
                     label(for='caption') Caption:
                     input#caption.form-control(type='text', placeholder='Oh my gosh, what to say?', name='caption' )
@@ -17,7 +17,7 @@ html
                 div.file-field.input-field
                     div.btn.orange
                         span Upload Photo!
-                        input(type="file")
+                        input(type="file" accept="image/*" name="pic")
                     div.file-path-wrapper
                          input.form-control(class="file-path validate", type="text")
                     

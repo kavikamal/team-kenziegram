@@ -92,10 +92,8 @@ app.post('/latest', function (req, res, next) {
 })
 
 // Uploads a new images and renders the uploaded page with the new image
-app.post('/upload', function (req, res, next) {
-    // // req.file is the `myFile` file
-    // // req.body will hold the text fields, if there were any
-    // items.push(req.file.filename);
+app.post('/upload', upload.single('pic'), function (req, res, next) {
+    console.log(req.body)
     res.render('indexpost.pug',{title:'KenzieGram',imagename: req.file.filename});
   })
 
@@ -124,8 +122,8 @@ app.post('/createProfile', function (req, res) {
 });
 
 app.listen(PORT, () => {
-    mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
-    // mongoose.connect('mongodb://localhost/xforcekenzigram')
+    // mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
+    mongoose.connect('mongodb://localhost/xforcekenzigram')
     console.log(`listening at port ${PORT}`);
 })
 
