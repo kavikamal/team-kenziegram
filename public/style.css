@@ -78,3 +78,6 @@ a {
     color: black;
     font-weight: bold;
 }
+.parallax-container-height {
+    height: "your height here";
+  }
