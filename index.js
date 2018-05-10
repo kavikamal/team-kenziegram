@@ -167,7 +167,7 @@ app.post('/login', (req, res) => {
     db.collection('users').find({ 'name' : userName})
     .then((user) =>{
         console.log(user.posts);
-        res.render('indexget', { title: 'KenzieGram', arrayofimages: items, userName })
+        res.render('indexget', { title: 'KenzieGram', arrayofimages: items, userName });
     })
     
 })
