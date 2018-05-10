@@ -5,7 +5,8 @@ let timerID;
 let attempts = 0;
 const maxAttempts = 2;
 
-let name;
+
+
 
 // Prevents the form from submitting without an image being selected first
 function validateForm(){
@@ -36,7 +37,7 @@ function fetchImages() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({after: maxTimestamp, name}),
+        body: JSON.stringify({after: maxTimestamp}),
     }
 
     fetch('/latest', postRequestOptions)
@@ -55,7 +56,7 @@ function fetchImages() {
             maxTimestamp = data.timestamp;
         }  
         // Poll for new images every 5 seconds
-        timerID = setTimeout(fetchImages, 1000);
+        timerID = setTimeout(fetchImages, 5000);
     })
     .catch(error => {
         console.log("An error has occurred when attempting to Fetch:", error);
@@ -71,34 +72,3 @@ function fetchImages() {
 }
 
 fetchImages();
-
-let signUpBtn = document.getElementById("signupBtn");
-
-signUpBtn.addEventListener("submit", function (event) {
-    
-    event.preventDefault();
-    const signupForm = signUpBtn.parentElement
-    const requestedUsername = signupForm.querySelector("input#name");
-
-    name = requestedUsername.value;
-
-    const options = {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            name: requestedUsername.value
-        })
-    }
-
-    fetch("/createProfile", options)
-        .then(res => res.json())
-        .then(data => {
-            console.log("User creation succeeded, for username:", data.name)
-        })
-        .catch(error => {
-            console.log(error)
-        })
-})
-
