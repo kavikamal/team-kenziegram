@@ -5,10 +5,21 @@ html
         div.parallax-container.parallax-container-height
             div.parallax
                 img(src="images/bi2.jpg")
+            div.container
+                div.row
+                    br
+                    br
+                    br
+                    div.col.s12.center
+                        span.welcome-text.white-text Welcome!
+                    
+
+                        
                 
     
         div.container.section.white
-            h1 Sign up here!
+            h1.orange-text.center Are you new?
+            h4.teal-text Sign up here
             p= typeof msg != 'undefined' ? msg : ''
             form(method='POST' action='/createProfile')
                 div.form-group
@@ -16,7 +27,7 @@ html
                     input#name.form-control(type='text', placeholder='username' name='name' require)
 
                 div.file-field.input-field
-                    div.btn
+                    div.btn.orange
                         span Upload Profile Picture:
                         input(type="file", name="profilePic")
                     div.file-path-wrapper
@@ -33,9 +44,17 @@ html
         div.parallax-container.parallax-container-height
             div.parallax
                 img(src="images/bi2.jpg")
+            div.container
+                div.row
+                    br
+                    br
+                    
+                    div.col.s12.center
+                        span.welcome-subtext.white-text.text-darken-2 Already a member?
+                    br
+                    br
                 
         div.container.section.white
-            h1 Already a member?
             h5 Login here
             p= typeof msg != 'undefined' ? msg : ''
             form(method='POST' action='/createProfile')

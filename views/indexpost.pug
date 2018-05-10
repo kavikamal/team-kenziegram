@@ -3,8 +3,8 @@ html
     include includes/header.pug
 
     body
-        div(class='container')
-            h1 Make a Post!
+        div.container
+            h1.center.teal-text Make a Post
             
             p= typeof msg != 'undefined' ? msg : ''
 
@@ -22,7 +22,7 @@ html
                          input.form-control(class="file-path validate", type="text")
                     
                 
-                button.btn.btn-primary.orange(type='submit') Create Post
+                button.btn.btn-primary.orange.center(type='submit') Create Post
                 
             br
             input(class="btn", type="button", value="Go back", onclick="history.back()")
