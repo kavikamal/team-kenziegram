@@ -101,6 +101,7 @@ app.post('/latest', function (req, res, next) {
 
 // Uploads a new images and renders the uploaded page with the new image
 app.post('/upload', upload.single('myFile'), function (req, res, next) {
+    console.log(req.body.name);
     // req.file is the `myFile` file
     // req.body will hold the text fields, if there were any
     // gm starts the graphicsMagick package that edits our uploaded images
@@ -116,9 +117,17 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
                 // This deletes the original file
                 console.log('Orginal file was Deleted')
 
-                res.render('indexpost.pug', { title: 'KenzieGram', imagename: `resized${req.file.filename}` });
+                res.render('indexget.pug', { title: 'KenzieGram', imagename: `resized${req.file.filename}` });
             })
-            console.log(req.file.filename)
+            let post = {
+                image: req.file.filename,
+                timestamp: Date.now,
+                user: req.body.name,
+                caption: req.body.caption,
+                comments: [],
+            };
+            db.collection('users').findOneAndUpdate({"name": "Nick"}, {$push: {posts: post} })   
+        
         })
     // items.push(req.file.filename);
 
@@ -146,14 +155,26 @@ app.post('/createProfile', profilePicUpload.single('profilePic'), function (req,
 
             instance.save()
                 .then(instance => res.send())
-            res.render('indexget.pug', { title: 'KenzieGram', arrayofimages: items });
+            res.render('indexget.pug', { title: 'KenzieGram', arrayofimages: items, userName: req.body.name });
 
         })
 });
 
+// Endpoint for login instead of creating a new profile
+app.post('/login', (req, res) => {
+    // let userName = req.body.name;
+    let userName = "Nick"
+    db.collection('users').find({ 'name' : userName})
+    .then((user) =>{
+        console.log(user.posts);
+        res.render('indexget', { title: 'KenzieGram', arrayofimages: items, userName })
+    })
+    
+})
+
 app.listen(PORT, () => {
-    mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
-    // mongoose.connect('mongodb://localhost/xforcekenzigram')
+    // mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
+    mongoose.connect('mongodb://localhost/xforcekenziegram')
     console.log(`listening at port ${PORT}`);
 })
 
