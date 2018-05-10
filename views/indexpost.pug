@@ -1,35 +1,35 @@
 doctype
 html
     include includes/header.pug
+    main
+        body
+            div.container
+                h1.center.teal-text Make a Post
+                
+                p= typeof msg != 'undefined' ? msg : ''
 
-    body
-        div.container
-            h1.center.teal-text Make a Post
-            
-            p= typeof msg != 'undefined' ? msg : ''
-
-            
-            form(method='POST' action='/upload' enctype="multipart/form-data")
-                div.form-group
-                    label(for='caption') Caption:
-                    input#caption.form-control(type='text', placeholder='Oh my gosh, what to say?', name='caption' )
-              
-                div.file-field.input-field
-                    div.btn.orange
-                        span Upload Photo!
-                        input(type="file" accept="image/*" name="myFile")
-                    div.file-path-wrapper
-                         input.form-control(class="file-path validate", type="text")
+                
+                form(method='POST' action='/upload' enctype="multipart/form-data")
+                    div.form-group
+                        label(for='caption') Caption:
+                        input#caption.form-control(type='text', placeholder='Oh my gosh, what to say?', name='caption' )
+                
+                    div.file-field.input-field
+                        div.btn.orange
+                            span Upload Photo!
+                            input(type="file" accept="image/*" name="myFile")
+                        div.file-path-wrapper
+                            input.form-control(class="file-path validate", type="text")
+                        
                     
-                
-                button.btn.btn-primary.orange.center(type='submit') Create Post
-                
-            br
-            input(class="btn", type="button", value="Go back", onclick="history.back()")
-                
-            input(class="btn", type="button", value="home", onclick="window.location.href='http://localhost:3000'")
-            div(id="images")
-            br
-            br
-
+                    button.btn.btn-primary.orange.center(type='submit') Create Post
+                    
+                br
+                input(class="btn", type="button", value="Go back", onclick="history.back()")
+                    
+                input(class="btn", type="button", value="home", onclick="window.location.href='http://localhost:3000'")
+                div(id="images")
+                br
+                br
+    footer
         include includes/footer.pug
