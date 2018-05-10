@@ -1,0 +1,21 @@
+doctype
+html
+  head
+    title= title
+    link(rel='stylesheet', href='style.css', type='text/css')
+  body
+    header
+        h1 KenzieGram
+        h3= username
+    div(id="message")
+    form(method='post' action='/upload' onsubmit='return validateForm()' enctype='multipart/form-data')
+        div
+            label(for='file') Choose a File:&nbsp&nbsp
+            input(type='file' id='file' name='myFile')
+            input(type='hidden', id='hidden', name= 'name', value= username)
+            button(id='uploadBtn') Upload
+    div(id='imagecontainer')
+        each image in arrayofimages
+            div
+                img(src='uploads/'+image)
+    script(src='main.js')
