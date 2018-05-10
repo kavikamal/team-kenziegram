@@ -2,20 +2,18 @@ doctype
 html
     include includes/header.pug
     body
-        div(class='container')
+        div.parallax-container.parallax-container-height
+            div.parallax
+                img(src="images/bi2.jpg")
+                
+    
+        div.container.section.white
             h1 Sign up here!
-            
             p= typeof msg != 'undefined' ? msg : ''
-
-            
             form(method='POST' action='/createProfile')
                 div.form-group
                     label(for='name') Name:
                     input#name.form-control(type='text', placeholder='username' name='name' require)
-
-                //- div.form-group
-                //-     label(for='email') Email:
-                //-     input#email.form-control(type='email', placeholder='name@email.com' name='email' require)
 
                 div.file-field.input-field
                     div.btn
@@ -27,11 +25,30 @@ html
                     
                 
                 button.btn.btn-primary(type='submit') Create Profile
-                
             br
-            input(class="btn", type="button", value="Go back!", onclick="history.back()")
-                
-            input(class="btn", type="button", value="home", onclick="window.location.href='http://localhost:3000'")
-            div(id="images")
+            //- input.btn(type="button", value="Go back!", onclick="history.back()")
+            //- input.btn(type="button", value="home", onclick="window.location.href='http://localhost:3000'")
             
+            //-paralax container
+        div.parallax-container.parallax-container-height
+            div.parallax
+                img(src="images/bi2.jpg")
+                
+        div.container.section.white
+            h1 Already a member?
+            h5 Login here
+            p= typeof msg != 'undefined' ? msg : ''
+            form(method='POST' action='/createProfile')
+                div.form-group
+                    label(for='name') Name:
+                    input#name.form-control(type='text', placeholder='username' name='name' require)
+                br
+                button.btn.btn-primary(type='submit') Login here
+                br
+                br
+            
+
+        
+        
+        include includes/footer.pug
 
