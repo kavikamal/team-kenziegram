@@ -8,8 +8,14 @@ head
 nav
         div.nav-wrapper
                 a(href="/", class="brand-logo center") Kenziegram
+                a(href="/", class="brand-logo center")
+                if userName       
+                        div.user-photo 
+                                img(src='uploads/' + profilePic)
+                
                 a(href="#", data-target="mobile-demo", class="sidenav-trigger") <i class="material-icons">menu</i>
                 ul.right.hide-on-med-and-down
+                        
                         li
                                 a(href="/") home
                         li

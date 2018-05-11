@@ -8,7 +8,7 @@ body
         div.card
             div.container
                 div.chatbox
-                    div.chatlogs
+                    div#messageslist.chatlogs
                         div.chat.friend
                             div.user-photo
                             p.chat-message whats up!
@@ -31,11 +31,12 @@ body
                             p.chat-message Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore ipsam odit modi aliquid harum aliquam, illo maiores rem facilis debitis dolore, alias repellendus architecto, doloremque amet recusandae nisi fugit magnam.
                     
                     div.chat-form
-                        textarea
-                        button.btn.orange.center-align(type='submit') send
+                        textarea#textArea
+                        button#send.btn.orange.center-align(type='submit') send
                     br
                         
     br
+    script(src='chat.js')
     include includes/footer.pug
                 
 
