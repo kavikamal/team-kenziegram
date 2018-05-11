@@ -43,7 +43,7 @@ html
             div.container.section.white
                 h5 Login here
                 p= typeof msg != 'undefined' ? msg : ''
-                form(method='POST' action='/createProfile')
+                form(method='POST' action='/login')
                     div.form-group
                         label(for='name') Name:
                         input#name.form-control(type='text', placeholder='username' name='name' require)
