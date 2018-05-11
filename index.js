@@ -165,8 +165,8 @@ app.post('/login', (req, res) => {
 })
 
 app.listen(PORT, () => {
-    // mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
-    mongoose.connect('mongodb://localhost/xforcekenziegram')
+    mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
+    // mongoose.connect('mongodb://localhost/xforcekenziegram')
     console.log(`listening at port ${PORT}`);
 })
 
