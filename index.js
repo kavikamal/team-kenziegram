@@ -60,7 +60,7 @@ var Feed = mongoose.model('Feed', feedSchema);
 // Renders the main page along with all the images
 app.get('/', function (req, res) {  
     fs.readdir(path, function(err, items) {   
-        res.render('indexget.pug',{title: 'KenzieGram', arrayofimages: items});
+        res.render('signup',{title: 'KenzieGram'});
 
     });
 })
@@ -163,13 +163,15 @@ app.post('/createProfile', profilePicUpload.single('profilePic'), function (req,
 
 // Endpoint for login instead of creating a new profile
 app.post('/login', (req, res) => {
-    // let userName = req.body.name;
-    let userName = "Nick"    
+    console.log(req.body.name);
+    let userName = req.body.name;
     db.collection('users').findOne({ 'name' : userName})
     .then((user) =>{
-        res.render('indexget', { title: 'KenzieGram', posts: user.posts, userName: "Nick" })
+        res.render('indexget', { title: 'KenzieGram', posts: user.posts, userName})
     })
-    
+    .catch((err) =>{
+        res.render('indexget', { title: 'KenzieGram', userName})
+    })
 })
 
 app.listen(PORT, () => {
