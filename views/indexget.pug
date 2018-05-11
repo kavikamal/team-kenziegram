@@ -1,9 +1,7 @@
 doctype
 html
     include includes/header.pug
-    title= title
-  
-                
+    title= title       
 body
     header
     br
@@ -14,6 +12,7 @@ body
     div.container
         div.row
             div.col.s6.offset-s3
+<<<<<<< HEAD
             if posts
                 each post in posts
                     div.card.hoverable.materialboxed
@@ -24,9 +23,21 @@ body
                             p= post.caption
                         div.card-action
                             a(href="#")
+=======
+                if posts
+                    each post in posts
+                        div.card.hoverable.materialboxed
+                            div.card-image
+                                img(src='uploads/'+post.image)
+                                span.card-title= userName
+                            div.card-content
+                                p= post.caption
+                            div.card-action
+                                a(href="#")
+>>>>>>> 6d840ef9db2ef93c9a6bd63396e4becb0bb0554e
     div#message.container.center-align    
             
-    include includes/footer.pug
+include includes/footer.pug
     
 
 

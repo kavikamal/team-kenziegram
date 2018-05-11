@@ -149,7 +149,7 @@ app.post('/createProfile', profilePicUpload.single('profilePic'), function (req,
                 posts: []
             });
 
-            console.log(req.body);
+            
             console.log("req.body.profilepic: ", req.body.profilePic);
 
 
@@ -160,14 +160,14 @@ app.post('/createProfile', profilePicUpload.single('profilePic'), function (req,
         })
 });
 
+
 // Endpoint for login instead of creating a new profile
 app.post('/login', (req, res) => {
     // let userName = req.body.name;
-    let userName = "Nick"
+    let userName = "Nick"    
     db.collection('users').findOne({ 'name' : userName})
     .then((user) =>{
-        console.log(user.posts);
-        res.render('indexget', { title: 'KenzieGram', posts: user.posts, userName })
+        res.render('indexget', { title: 'KenzieGram', posts: user.posts, userName: "Nick" })
     })
     
 })
