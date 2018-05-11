@@ -2,41 +2,23 @@ doctype
 html
   include includes/header.pug
     title KenzieChat
-body
-    br
-    div.container.card-size
-        div.card
-            div.container
-                div.chatbox
-                    div#messageslist.chatlogs
-                        div.chat.friend
-                            div.user-photo
-                            p.chat-message whats up!
-                        div.chat.self
-                            div.user-photo
-                                img(src='images/bi2.jpg')
-                            p.chat-message whats up!
-                        div.chat.friend
-                            div.user-photo
-                                img(src='images/bi1.jpg')
-                            p.chat-message Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore ipsam odit modi aliquid harum aliquam, illo maiores rem facilis debitis dolore, alias repellendus architecto, doloremque amet recusandae nisi fugit magnam.
-                        div.chat.friend
-                            div.user-photo
-                            p.chat-message whats up!
-                        div.chat.self
-                            div.user-photo
-                            p.chat-message whats up!
-                        div.chat.friend
-                            div.user-photo
-                            p.chat-message Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore ipsam odit modi aliquid harum aliquam, illo maiores rem facilis debitis dolore, alias repellendus architecto, doloremque amet recusandae nisi fugit magnam.
-                    
-                    div.chat-form
-                        textarea#textArea
-                        button#send.btn.orange.center-align(type='submit') send
-                    br
-                        
-    br
-    script(src='chat.js')
+main
+    body
+        br
+        div.container.card-size
+            div.card
+                div.container
+                    div.chatbox
+                        div#messageslist.chatlogs
+                            
+                        div.chat-form
+                            textarea#textArea
+                            button#send.btn.orange.center-align(type='submit') send
+                        br
+                            
+        br
+        script(src='chat.js')
+footer
     include includes/footer.pug
                 
 

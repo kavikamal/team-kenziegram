@@ -116,6 +116,28 @@ document.getElementById("send").addEventListener("click", (event) => {
         textarea.disabled = false;
     }
 })
+document.getElementById("send").addEventListener("click", (event) => {
+    // if the key pressed was enter (and not shift enter), post the message.
+    console.log("hello")
+    if(event.keyCode === 13 && !event.shiftKey) {
+        let textarea = document.getElementById("textArea")
+        textarea = textarea.value
+        if (textarea !== "") {
+            console.log("TextArea" + textarea)
+            let msg = textarea
+            appendMessage(msg);
+            scrollMessages();
+            const shouldScroll = scrolledToBottom();
+            console.log(msg)
+            // reset the textarea
+            textarea.value = "";
+            textarea.disabled = false;
+        }
+    }
+   
+})
+
+
 
 // call on startup to populate the messages and start the polling loop
 // fetchMessages();
