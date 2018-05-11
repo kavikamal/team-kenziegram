@@ -113,10 +113,6 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
         .write(`${path}/${req.file.filename}`, function (err) {
             // This creates the new file with our modifications
             if (!err) console.log('Image Resized!')
-            
-                // This deletes the original file
-                console.log('Orginal file was Deleted')
-
                 res.render('indexget.pug', { title: 'KenzieGram', imagename: `resized${req.file.filename}` });
             })
             let post = {
@@ -129,18 +125,16 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
             db.collection('users').findOneAndUpdate({"name": "Nick"}, {$push: {posts: post} })   
         
         })
-    // items.push(req.file.filename);
 
 app.post('/createProfile', profilePicUpload.single('profilePic'), function (req, res) {
     // The GraphicsMagick module creates a thumbnail image from the uploaded profile picture
-    console.log(req.body.profilePic)
     gm(`${profilePicPath}/${req.body.profilePic}`)
         .resize(25, 25, '!')
         .noProfile()
         .compress('JPEG')
         .quality(85)
         .write(`${profilePicPath}/${req.body.profilePic}`, function (err) {
-            if (!err) console.log('Image Resized!')
+            if (!err) console.log('Profile Pic Resized!')
             console.log(err)
             const instance = new User({
                 name: req.body.name,
@@ -148,10 +142,6 @@ app.post('/createProfile', profilePicUpload.single('profilePic'), function (req,
                 messages: [],
                 posts: []
             });
-
-            
-            console.log("req.body.profilepic: ", req.body.profilePic);
-
 
             instance.save()
                 .then(instance => res.send())

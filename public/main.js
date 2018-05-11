@@ -71,4 +71,4 @@ function fetchImages() {
 
 }
 
-fetchImages();
+// fetchImages();
