@@ -14,13 +14,14 @@ body
     div.container
         div.row
             div.col.s6.offset-s3
-                each image in arrayofimages
+            if posts
+                each post in posts
                     div.card.hoverable.materialboxed
                         div.card-image
-                            img(src='uploads/'+image)
-                            span.card-title User Name
+                            img(src='uploads/'+post.image)
+                            span.card-title= userName
                         div.card-content
-                            p I am a very simple card. I am good at containing small bits of information.I am convenient because I require little markup to use effectively.
+                            p= post.caption
                         div.card-action
                             a(href="#")
     div#message.container.center-align    

@@ -164,10 +164,10 @@ app.post('/createProfile', profilePicUpload.single('profilePic'), function (req,
 app.post('/login', (req, res) => {
     // let userName = req.body.name;
     let userName = "Nick"
-    db.collection('users').find({ 'name' : userName})
+    db.collection('users').findOne({ 'name' : userName})
     .then((user) =>{
         console.log(user.posts);
-        res.render('indexget', { title: 'KenzieGram', arrayofimages: items, userName })
+        res.render('indexget', { title: 'KenzieGram', posts: user.posts, userName })
     })
     
 })
