@@ -60,7 +60,7 @@ var Feed = mongoose.model('Feed', feedSchema);
 // Renders the main page along with all the images
 app.get('/', function (req, res) {  
     fs.readdir(path, function(err, items) {   
-        res.render('indexget.pug',{title: 'KenzieGram', arrayofimages: items});
+        res.render('signup',{title: 'KenzieGram'});
 
     });
 })
@@ -101,6 +101,7 @@ app.post('/latest', function (req, res, next) {
 
 // Uploads a new images and renders the uploaded page with the new image
 app.post('/upload', upload.single('myFile'), function (req, res, next) {
+    console.log(req.body.name);
     // req.file is the `myFile` file
     // req.body will hold the text fields, if there were any
     // gm starts the graphicsMagick package that edits our uploaded images
@@ -112,9 +113,17 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
         .write(`${path}/${req.file.filename}`, function (err) {
             // This creates the new file with our modifications
             if (!err) console.log('Image Resized!')
-                res.render('indexpost.pug', { title: 'KenzieGram', imagename: `resized${req.file.filename}` });
+                res.render('indexget.pug', { title: 'KenzieGram', imagename: `resized${req.file.filename}` });
             })
-            
+            let post = {
+                image: req.file.filename,
+                timestamp: Date.now,
+                user: req.body.name,
+                caption: req.body.caption,
+                comments: [],
+            };
+            db.collection('users').findOneAndUpdate({"name": "Nick"}, {$push: {posts: post} })   
+        
         })
 
 app.post('/createProfile', profilePicUpload.single('profilePic'), function (req, res) {
@@ -136,14 +145,28 @@ app.post('/createProfile', profilePicUpload.single('profilePic'), function (req,
 
             instance.save()
                 .then(instance => res.send())
-            res.render('indexget.pug', { title: 'KenzieGram', arrayofimages: items });
+            res.render('indexget.pug', { title: 'KenzieGram', arrayofimages: items, userName: req.body.name });
 
         })
 });
 
+
+// Endpoint for login instead of creating a new profile
+app.post('/login', (req, res) => {
+    console.log(req.body.name);
+    let userName = req.body.name;
+    db.collection('users').findOne({ 'name' : userName})
+    .then((user) =>{
+        res.render('indexget', { title: 'KenzieGram', posts: user.posts, userName})
+    })
+    .catch((err) =>{
+        res.render('indexget', { title: 'KenzieGram', userName})
+    })
+})
+
 app.listen(PORT, () => {
-    mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
-    // mongoose.connect('mongodb://localhost/xforcekenzigram')
+    // mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
+    mongoose.connect('mongodb://localhost/xforcekenziegram')
     console.log(`listening at port ${PORT}`);
 })
 
