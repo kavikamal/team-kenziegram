@@ -5,11 +5,17 @@ const mongoose = require('mongoose');
 const upload = multer({ dest: 'public/uploads/' });
 const profilePicUpload = multer({ dest: 'public/profilePictures/'})
 const gm = require('gm').subClass({ imageMagick: true });
+// password authentication PCM
+const expressValidator = require('express-validator');
+const expressSession = require('express-session');
 
 const app = express();
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+// password authentication PCM
+app.use(expressValidator());
+app.use(expressSession({secret: 'pedro', saveUninitialized: false, resave: false}));
 
 app.set('views', './views');
 app.set('view engine', 'pug');
@@ -17,7 +23,7 @@ app.set('view engine', 'pug');
 const dbName = 'kenziegram';
 const DB_USER = 'admin';
 const DB_PASSWORD = 'admin';
-const DB_URI = 'ds053428.mlab.com:53428';  
+const DB_URI = 'ds053428.mlab.com:53428';
 const PORT = process.env.PORT || 3000;
 const path = './public/uploads';
 const profilePicPath = './public/profilePictures'
@@ -63,6 +69,11 @@ app.get('/', function (req, res) {
         res.render('signup',{title: 'KenzieGram'});
 
     });
+})
+
+app.get('/register', (req, res) => {
+    res.render('signup', { title: 'Sign-up', success: false, errors: req.session.errors});
+    req.session.errors = null;
 })
 
 app.get('/chat', (req, res) => {
@@ -117,11 +128,13 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
                 caption: req.body.caption,
                 comments: [],
             };
-            db.collection('users').findOneAndUpdate({"name": "Nick"}, {$push: {posts: post} })   
+            db.collection('users').findOneAndUpdate({"name": "test"}, {$push: {posts: post} })   
         
         })
 
 app.post('/createProfile', profilePicUpload.single('profilePic'), function (req, res) {
+    req.check('name', 'Invalid profile name').isUppercase();
+    req.check('password', 'Passowrd is Invalid').isLength({min: 4});
     // The GraphicsMagick module creates a thumbnail image from the uploaded profile picture
     gm(`${profilePicPath}/${req.body.profilePic}`)
         .resize(25, 25, '!')
