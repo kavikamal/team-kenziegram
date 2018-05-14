@@ -14,10 +14,10 @@ app.use(express.urlencoded({ extended: false }));
 app.set('views', './views');
 app.set('view engine', 'pug');
 
-const dbName = 'xforcekenziegram';
+const dbName = 'kenziegram';
 const DB_USER = 'admin';
 const DB_PASSWORD = 'admin';
-const DB_URI = 'ds217350.mlab.com:17350';
+const DB_URI = 'ds053428.mlab.com:53428';  
 const PORT = process.env.PORT || 3000;
 const path = './public/uploads';
 const profilePicPath = './public/profilePictures'
