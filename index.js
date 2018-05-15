@@ -100,17 +100,12 @@ app.get('/', function (req, res) {
     });
 })
 
-app.get('/register', (req, res) => {
-
-    res.render('signup')
-})
-
 app.get('/chat', (req, res) => {
     res.render('chat')
 })
 
 app.get('/post', (req, res) => {
-    res.render('indexpost')
+    res.render('post')
 })
 
 // Gets the latest images uploaded after a client-specified timestamp
@@ -137,7 +132,7 @@ app.post('/latest', function (req, res, next) {
 // Uploads a new images and renders the uploaded page with the new image
 app.post('/upload', upload.single('myFile'), function (req, res, next) {
     console.log("rec body " + req.file.filename);
-    uploadToS3(req.file.filename);
+    // uploadToS3(req.file);
     // req.file is the `myFile` file
     // req.body will hold the text fields, if there were any
     // gm starts the graphicsMagick package that edits our uploaded images
@@ -149,7 +144,7 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
         .write(`${path}/${req.file.filename}`, function (err) {
             // This creates the new file with our modifications
             if (!err) console.log('Image Resized!')
-                res.render('indexget.pug', { title: 'KenzieGram', imagename: `resized${req.file.filename}` });
+                res.render('photos.pug', { title: 'KenzieGram', imagename: `resized${req.file.filename}` });
             })
             let post = {
                 image: req.file.filename,
@@ -181,7 +176,7 @@ app.post('/createProfile', profilePicUpload.single('profilePic'), function (req,
 
             instance.save()
                 .then(instance => res.send())
-            res.render('indexget.pug', { title: 'KenzieGram', arrayofimages: items, userName: req.body.name });
+            res.render('photos.pug', { title: 'KenzieGram', arrayofimages: items, userName: req.body.name });
 
         })
 });
@@ -193,10 +188,10 @@ app.post('/login', (req, res) => {
     let userName = req.body.name;
     db.collection('users').findOne({ 'name' : userName})
     .then((user) =>{
-        res.render('indexget', { title: 'KenzieGram', posts: user.posts, userName})
+        res.render('photos', { title: 'KenzieGram', posts: user.posts, userName})
     })
     .catch((err) =>{
-        res.render('indexget', { title: 'KenzieGram', userName})
+        res.render('photos', { title: 'KenzieGram', userName})
     })
 })
 
