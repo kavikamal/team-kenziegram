@@ -1,3 +1,4 @@
+
 const express = require('express');
 const multer = require('multer');
 const fs = require('fs');
@@ -5,6 +6,40 @@ const mongoose = require('mongoose');
 const upload = multer({ dest: 'public/uploads/' });
 const profilePicUpload = multer({ dest: 'public/profilePictures/'})
 const gm = require('gm').subClass({ imageMagick: true });
+//utilizing amazon simple storage to store images in cloud.
+const aws = require('aws-sdk');
+
+//variables used to access amazon cloud bucket
+const BUCKETNAME = 'kenziegram';
+const IAM_USER_KEY = 'AKIAJX7IWDTQVEF5BRMA';
+const IAM_USER_SECRET = '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';
+
+
+//function to upload image to s3
+function uploadToS3(file) {
+    let file = req.file.filename;
+    let s3bucket = new AWS.S3({
+      accessKeyId: IAM_USER_KEY,
+      secretAccessKey: IAM_USER_SECRET,
+      Bucket: BUCKET_NAME
+    });
+    s3bucket.createBucket(function () {
+        var params = {
+          Bucket: BUCKET_NAME,
+          Key: file.name,
+          Body: file.data
+        };
+        s3bucket.upload(params, function (err, data) {
+          if (err) {
+            console.log('error in callback');
+            console.log(err);
+          }
+          console.log('success');
+          console.log(data);
+        });
+    });
+  }
+
 
 const app = express();
 app.use(express.static('public'));
@@ -101,7 +136,8 @@ app.post('/latest', function (req, res, next) {
 
 // Uploads a new images and renders the uploaded page with the new image
 app.post('/upload', upload.single('myFile'), function (req, res, next) {
-    console.log(req.body.name);
+    console.log("rec body " + req.file.filename);
+    uploadToS3(req.file.filename);
     // req.file is the `myFile` file
     // req.body will hold the text fields, if there were any
     // gm starts the graphicsMagick package that edits our uploaded images

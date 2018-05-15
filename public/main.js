@@ -1,10 +1,11 @@
+console.log('testing');
+
 const imageContainerDiv = document.getElementById("imagecontainer");
 let latestImages = [{timestamp: 0}];
 let maxTimestamp = Date.now();
 let timerID;
 let attempts = 0;
 const maxAttempts = 2;
-
 
 
 
