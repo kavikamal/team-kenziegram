@@ -133,16 +133,22 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
         })
 
 app.post('/createProfile', profilePicUpload.single('profilePic'), function (req, res) {
-    req.check('name', 'Invalid profile name').isUppercase();
-    req.check('password', 'Passowrd is Invalid').isLength({min: 4}).equals(req.body.confirmPassword)
+    req.check('name', 'Invalid profile name').notEmpty();
+    req.check('password', 'Password is Invalid').isLength({min: 4}).notEmpty()
+    req.check('password', 'Passwords Do Not Match').equals(req.body.confirmPassword)
     const errors = req.validationErrors();
     if (errors) {
         req.session.errors = errors;
         req.session.success = false;
+        console.log(errors);
+        for (error of errors) {
+            console.log(error.msg);
+        }
     } else {
         req.session.success = true;
     }
     res.redirect('/');
+    
     // The GraphicsMagick module creates a thumbnail image from the uploaded profile picture
     gm(`${profilePicPath}/${req.body.profilePic}`)
         .resize(25, 25, '!')
