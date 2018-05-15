@@ -145,3 +145,26 @@ main {
     height: 200px;
     margin-top: 2em;
 }
+
+.kenzie-darkblue {
+    background-color: rgb(4, 54, 105)
+}
+
+.kenzie-lightblue {
+    /* color: rgb(140, 204, 176); */
+    /* color: black; */
+    background-color: #02568B
+}
+
+.kenzie-accent {
+    color: #D0021B;
+}
+
+.kenzie-accent-background {
+    color: #D0021B;
+}
+
+.logo {
+    height: 100%;
+    margin-left: 10px;
+}
