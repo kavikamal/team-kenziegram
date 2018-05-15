@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const upload = multer({ dest: 'public/uploads/' });
 const profilePicUpload = multer({ dest: 'public/profilePictures/'})
 const gm = require('gm').subClass({ imageMagick: true });
-// password authentication PCM
+// password authentication
 const expressValidator = require('express-validator');
 const expressSession = require('express-session');
 
@@ -13,7 +13,7 @@ const app = express();
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-// password authentication PCM
+// password authentication
 app.use(expressValidator());
 app.use(expressSession({secret: 'pedro', saveUninitialized: false, resave: false}));
 
@@ -72,7 +72,7 @@ app.get('/', function (req, res) {
 })
 
 app.get('/register', (req, res) => {
-    res.render('signup', { title: 'Sign-up', success: false, errors: req.session.errors});
+    res.render('signup', { title: 'Sign-up', success: req.session.success, errors: req.session.errors});
     req.session.errors = null;
 })
 
@@ -134,7 +134,15 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
 
 app.post('/createProfile', profilePicUpload.single('profilePic'), function (req, res) {
     req.check('name', 'Invalid profile name').isUppercase();
-    req.check('password', 'Passowrd is Invalid').isLength({min: 4});
+    req.check('password', 'Passowrd is Invalid').isLength({min: 4}).equals(req.body.confirmPassword)
+    const errors = req.validationErrors();
+    if (errors) {
+        req.session.errors = errors;
+        req.session.success = false;
+    } else {
+        req.session.success = true;
+    }
+    res.redirect('/');
     // The GraphicsMagick module creates a thumbnail image from the uploaded profile picture
     gm(`${profilePicPath}/${req.body.profilePic}`)
         .resize(25, 25, '!')
