@@ -2,8 +2,26 @@ const express = require('express');
 const multer = require('multer');
 const fs = require('fs');
 const mongoose = require('mongoose');
-const upload = multer({ dest: 'public/uploads/' });
-const profilePicUpload = multer({ dest: 'public/profilePictures/'})
+let userName;
+
+//const profilePicUpload = multer({ dest: 'public/profilepictures/'})
+//User can upload image types - (jpg|jpeg|png|gif)
+var storage = multer.diskStorage({
+  
+    destination: (req, file, cb) => {
+      cb(null, 'public/uploads/') 
+    },
+    filename: (req, file, cb) => {
+      if (!file.originalname.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/)) {
+        return cb(new Error('Only image files are allowed!'), false);
+      }
+      cb(null,Date.now()  + '-' + file.originalname)
+    }
+  });
+const upload = multer({storage: storage});
+
+// const upload = multer({ dest: 'public/uploads/' });
+
 const gm = require('gm').subClass({ imageMagick: true });
 // password authentication
 const expressValidator = require('express-validator');
@@ -26,7 +44,7 @@ const DB_PASSWORD = 'admin';
 const DB_URI = 'ds053428.mlab.com:53428';
 const PORT = process.env.PORT || 3000;
 const path = './public/uploads';
-const profilePicPath = './public/profilePictures'
+
 const items = [];
 let maxTimestamp = 0;
 
@@ -107,7 +125,7 @@ app.post('/latest', function (req, res, next) {
 
 // Uploads a new images and renders the uploaded page with the new image
 app.post('/upload', upload.single('myFile'), function (req, res, next) {
-    console.log(req.body.name);
+    
     // req.file is the `myFile` file
     // req.body will hold the text fields, if there were any
     // gm starts the graphicsMagick package that edits our uploaded images
@@ -128,11 +146,12 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
                 caption: req.body.caption,
                 comments: [],
             };
-            db.collection('users').findOneAndUpdate({"name": "test"}, {$push: {posts: post} })   
+            db.collection('users').findOneAndUpdate({"name": userName }, {$push: {posts: post} })   
         
-        })
-
-app.post('/createProfile', profilePicUpload.single('profilePic'), function (req, res) {
+        });
+      
+app.post('/createProfile', upload.single('profilePic'), function (req, res, next) {
+    // The GraphicsMagick module creates a thumbnail image from the uploaded profile picture
     req.check('name', 'Invalid profile name').notEmpty();
     req.check('password', 'Password is Invalid').isLength({min: 4}).notEmpty()
     req.check('password', 'Passwords Do Not Match').equals(req.body.confirmPassword)
@@ -147,20 +166,19 @@ app.post('/createProfile', profilePicUpload.single('profilePic'), function (req,
     } else {
         req.session.success = true;
     }
-    res.redirect('/');
-    
-    // The GraphicsMagick module creates a thumbnail image from the uploaded profile picture
-    gm(`${profilePicPath}/${req.body.profilePic}`)
+    //
+    userName = req.body.name;
+    gm(`${path}/${req.file.filename}`)
         .resize(25, 25, '!')
         .noProfile()
         .compress('JPEG')
         .quality(85)
-        .write(`${profilePicPath}/${req.body.profilePic}`, function (err) {
+        .write(`${path}/${req.file.filename}`, function (err) {
             if (!err) console.log('Profile Pic Resized!')
             console.log(err)
             const instance = new User({
                 name: req.body.name,
-                profilePic: `${profilePicPath}/${req.body.profilePic}`,
+                profilePic: `${req.file.filename}`,
                 messages: [],
                 posts: []
             });
@@ -176,7 +194,7 @@ app.post('/createProfile', profilePicUpload.single('profilePic'), function (req,
 // Endpoint for login instead of creating a new profile
 app.post('/login', (req, res) => {
     console.log(req.body.name);
-    let userName = req.body.name;
+    userName = req.body.name;
     db.collection('users').findOne({ 'name' : userName})
     .then((user) =>{
         res.render('photos', { title: 'KenzieGram', posts: user.posts, userName})
