@@ -6,23 +6,23 @@ html
             marquee(behavior="alternate" direction="left" scrollamount="3")
                 img(src="https://i.imgur.com/xhKrJGE.jpg" class="scrolling-header")
             div.container.section.white
-                h1.deep-orange-text.center Welcome!
+                //- h1.center.kenzie-lightblue Welcome!
                 div.outline
-                    h4.cyan-text Sign up here:
+                    h4.black-text Sign up here:
                     p= typeof msg != 'undefined' ? msg : ''
                     form(method='POST' action='/createProfile')
                         div.form-group
                             label(for='name') Name:
                             input#name.form-control(type='text', placeholder='username' name='name' require)
                         div.file-field.input-field
-                            div.btn.deep-orange
+                            div.btn.kenzie-lightblue
                                 span Upload Profile Picture:
                                 input(type="file", name="profilePic")
                             div.file-path-wrapper
                                 input.form-control(class="file-path validate", type="text")
-                        button.btn.cyan.darken-1.btn-primary(type='submit') Create Profile
+                        button.btn.kenzie-lightblue.btn-primary(type='submit') Create Profile
             div.container.section.white
-                h2.cyan-text.center Already a member?
+                //- h2.cyan-text.center Already a member?
                 div.outline
                     h5 Login here:
                     p= typeof msg != 'undefined' ? msg : ''
@@ -31,7 +31,7 @@ html
                             label(for='name') Name:
                             input#name.form-control(type='text', placeholder='username' name='name' require)
                         br
-                        button.btn.cyan.darken-1.btn-primary(type='submit') Login
+                        button.btn.kenzie-lightblue.btn-primary(type='submit') Login
                         br
                         br
     footer
