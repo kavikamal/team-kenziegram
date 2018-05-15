@@ -2,6 +2,11 @@ const express = require('express');
 const multer = require('multer');
 const fs = require('fs');
 const mongoose = require('mongoose');
+const passport = require('passport');
+const flash = require('connect-flash');
+const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt-nodejs');
 let userName;
 
 //const profilePicUpload = multer({ dest: 'public/profilepictures/'})
@@ -34,6 +39,13 @@ app.use(express.urlencoded({ extended: false }));
 // password authentication
 app.use(expressValidator());
 app.use(expressSession({secret: 'pedro', saveUninitialized: false, resave: false}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash()); 
+
+//
+app.use(morgan('dev')); // log every request to the console
+app.use(cookieParser()); // read cookies (needed for auth)
 
 app.set('views', './views');
 app.set('view engine', 'pug');
@@ -57,6 +69,7 @@ const Schema = mongoose.Schema;
 let userSchema = new Schema({
 
     name: String,
+    password: String,
     profilePic: String,
     messages: [{
         name: String,
@@ -152,7 +165,7 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
       
 app.post('/createProfile', upload.single('profilePic'), function (req, res, next) {
     // The GraphicsMagick module creates a thumbnail image from the uploaded profile picture
-    req.check('name', 'Invalid profile name').notEmpty();
+    req.check('name', 'Invalid profile name').isLength({min: 4}).notEmpty();
     req.check('password', 'Password is Invalid').isLength({min: 4}).notEmpty()
     req.check('password', 'Passwords Do Not Match').equals(req.body.confirmPassword)
     const errors = req.validationErrors();
@@ -166,7 +179,7 @@ app.post('/createProfile', upload.single('profilePic'), function (req, res, next
     } else {
         req.session.success = true;
     }
-    //
+    if (req.session.success === true) {
     userName = req.body.name;
     gm(`${path}/${req.file.filename}`)
         .resize(25, 25, '!')
@@ -187,7 +200,8 @@ app.post('/createProfile', upload.single('profilePic'), function (req, res, next
                 .then(instance => res.send())
             res.render('photos.pug', { title: 'KenzieGram', arrayofimages: items, userName: req.body.name });
 
-        })
+        });
+    }
 });
 
 
