@@ -30,7 +30,7 @@ const upload = multer({storage: storage});
 const gm = require('gm').subClass({ imageMagick: true });
 // password authentication
 const expressValidator = require('express-validator');
-const expressSession = require('express-session');
+const session = require('express-session');
 
 const app = express();
 app.use(express.static('public'));
@@ -38,11 +38,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 // password authentication
 app.use(expressValidator());
-app.use(expressSession({secret: 'pedro', saveUninitialized: false, resave: false}));
+app.use(session({secret: 'pedro', saveUninitialized: false, resave: false}));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(flash()); 
-
+app.use(flash());
 //
 app.use(morgan('dev')); // log every request to the console
 app.use(cookieParser()); // read cookies (needed for auth)
@@ -67,7 +66,7 @@ db.on('error', console.error.bind(console, 'connection error: '));
 // Define Schemas 
 const Schema = mongoose.Schema;
 let userSchema = new Schema({
-
+    local : {
     name: String,
     password: String,
     profilePic: String,
@@ -84,8 +83,52 @@ let userSchema = new Schema({
         caption: String,
         comments: Array,
     }]
-
+    }
 });
+userSchema.methods.generateHash = function(password) {
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+};
+userSchema.methods.validPassword = function(password) {
+    return bcrypt.compareSync(password, this.local.password);
+};
+
+// passport.js stuff
+    // =========================================================================
+    // LOCAL LOGIN =============================================================
+    // =========================================================================
+    // we are using named strategies since we have one for login and one for signup
+    // by default, if there was no name, it would just be called 'local'
+    const LocalStrategy   = require('passport-local').Strategy;
+
+    passport.use('local-login', new LocalStrategy({
+        // by default, local strategy uses username and password, we will override with email
+        usernameField : 'username',
+        passwordField : 'password',
+        passReqToCallback : true // allows us to pass back the entire request to the callback
+    },
+    function(req, username, password, done) { // callback with email and password from our form
+
+        // find a user whose email is the same as the forms email
+        // we are checking to see if the user trying to login already exists
+        User.findOne({ 'local.email' :  email }, function(err, user) {
+            // if there are any errors, return the error before anything else
+            if (err)
+                return done(err);
+
+            // if no user is found, return the message
+            if (!user)
+                return done(null, false, req.flash('loginMessage', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
+
+            // if the user is found but the password is wrong
+            if (!user.validPassword(password))
+                return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
+
+            // all is well, return successful user
+            return done(null, user);
+        });
+
+    }));
+//
 let feedSchema = new Schema({
     posts: Array
 });
@@ -97,7 +140,7 @@ var Feed = mongoose.model('Feed', feedSchema);
 // Renders the main page along with all the images
 app.get('/', function (req, res) {  
     fs.readdir(path, function(err, items) {   
-        res.render('signup',{title: 'KenzieGram'});
+        res.render('signup', { title: 'Sign-up', success: req.session.success, errors: req.session.errors});
 
     });
 })
@@ -165,21 +208,18 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
       
 app.post('/createProfile', upload.single('profilePic'), function (req, res, next) {
     // The GraphicsMagick module creates a thumbnail image from the uploaded profile picture
-    req.check('name', 'Invalid profile name').isLength({min: 4}).notEmpty();
-    req.check('password', 'Password is Invalid').isLength({min: 4}).notEmpty()
+    req.check('name', 'Invalid profile name').isLength({min: 4})
+    req.check('password', 'Password is Invalid').isLength({min: 4})
     req.check('password', 'Passwords Do Not Match').equals(req.body.confirmPassword)
     const errors = req.validationErrors();
     if (errors) {
         req.session.errors = errors;
         req.session.success = false;
         console.log(errors);
-        for (error of errors) {
-            console.log(error.msg);
-        }
     } else {
         req.session.success = true;
     }
-    if (req.session.success === true) {
+    if (req.session.success) {
     userName = req.body.name;
     gm(`${path}/${req.file.filename}`)
         .resize(25, 25, '!')
@@ -191,6 +231,7 @@ app.post('/createProfile', upload.single('profilePic'), function (req, res, next
             console.log(err)
             const instance = new User({
                 name: req.body.name,
+                password: req.body.password,
                 profilePic: `${req.file.filename}`,
                 messages: [],
                 posts: []
