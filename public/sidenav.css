@@ -28,7 +28,7 @@ main {
         height: 500px;
         overflow-x: hidden;
         overflow-y: scroll;
-    }}
+}}
 
 @media only screen and (max-width: 600px) {
     .chatlogs {
@@ -37,7 +37,7 @@ main {
         height: 350px;
         overflow-x: hidden;
         overflow-y: scroll;
-    }}
+}}
 
 .chatlogs::-webkit-scrollbar {
     width: 8px;
@@ -96,12 +96,12 @@ main {
     background: #fbfbfb;
     width: 75%;
     height: 50px;
-    border: 2px solid #eee;
+    border: 2px solid rgb(0, 0, 0, .25);
     border-radius: 3px;
     resize: none;
     padding: 10px;
     font-size: 18px;
-    color: #333;
+    /* color: #333; */
 }
 
 .chat-form textarea:focus {
@@ -131,6 +131,9 @@ main {
     -webkit-transition: background .2s ease;
     -moz-transition: background .2s ease;
     -o-transition: background .2s ease;
+}
+.card{ 
+    border: 1px solid rgb(0, 0, 0, .25);
 }
 
 .card-size {
@@ -185,7 +188,20 @@ main {
     color: #D0021B;
 }
 
+@media only screen and (max-width: 374px){
+    .logo {
+        height: 100%;
+        margin-left: 50%;
+    }}
+
+@media only screen and (min-width: 375px) and (max-width: 600px){
+    .logo {
+        height: 100%;
+        margin-left: 60%;
+}}
+
+@media only screen and (min-width: 601px){
 .logo {
     height: 100%;
-    margin-left: 10px;
-}
+    margin-left: 1%;
+}}
