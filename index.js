@@ -259,7 +259,7 @@ app.post('/login', (req, res) => {
           } else {
             req.session.userId = user._id;
             console.log(user.posts);
-            res.render('photos', { title: 'KenzieGram', posts: user.post, userName})
+            res.render('photos', { title: 'KenzieGram', posts: user.posts})
           }
         });
       } else {
