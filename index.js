@@ -158,8 +158,8 @@ app.post('/upload', imageUpload.single('myFile'), function (req, res, next) {
             let post = {
                 image: req.file.filename,
                 timestamp: Date.now,
-                // user: req.body.name,
-                // caption: req.body.caption,
+                user: req.body.name,
+                caption: req.body.caption,
                 comments: [],
             };
             db.collection('users').findOneAndUpdate({"name": userName }, {$push: {posts: post} })   
