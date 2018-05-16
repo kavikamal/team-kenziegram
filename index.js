@@ -230,11 +230,13 @@ app.post('/createProfile', upload.single('profilePic'), function (req, res, next
             if (!err) console.log('Profile Pic Resized!')
             console.log(err)
             const instance = new User({
+                local: {
                 name: req.body.name,
                 password: req.body.password,
                 profilePic: `${req.file.filename}`,
                 messages: [],
                 posts: []
+                }
             });
 
             instance.save()
