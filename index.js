@@ -6,9 +6,10 @@ const fs = require('fs');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
 const AWS=require("aws-sdk");
 const gm = require('gm').subClass({ imageMagick: true });
-let userName;
+//let userName;
 
 //User can upload image types - (jpg|jpeg|png|gif)
 var storage = multer.diskStorage({
@@ -28,14 +29,6 @@ const app = express();
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-//use sessions for tracking logins
-app.use(session({
-    secret: 'work hard',
-    resave: true,
-    saveUninitialized: false
-  }));
-
 app.set('views', './views');
 app.set('view engine', 'pug');
 
@@ -66,11 +59,7 @@ let userSchema = new Schema({
         type: String,
         required: true,
       },
-      passwordConf: {
-        type: String,
-        required: true,
-      },
-    
+     
     profilePic: String,
     messages: [{
         username: String,
@@ -121,10 +110,18 @@ userSchema.pre('save', function (next) {
   });
 
 
+//use sessions for tracking logins
+app.use(session({
+    secret: 'work hard',
+    resave: true,
+    saveUninitialized: false,
+    store: new MongoStore({
+      mongooseConnection: db
+    })
+  }));
 
 // Compile User and Feed models from the schemas
 var User = mongoose.model('User', userSchema);
-
 
 //variables used to access amazon cloud bucket
 const BUCKET_NAME = 'kenziegram';
@@ -163,10 +160,39 @@ app.get('/chat', (req, res) => {
     res.render('chat')
 })
 
-app.get('/post', (req, res) => {
-    res.render('post')
-})
+app.get('/photos', (req, res) => {
+    User.findOne({ _id: req.session.userId })
+    .exec(function (err, user) {
+      if (err) {
+        return callback(err)
+      } else if (!user) {
+        var err = new Error('User not found.');
+        err.status = 401;
+        res.render('error', { title: 'KenzieGram', errorMessage: err})
+      }else {
+         res.render('photos', { title: 'KenzieGram', posts: user.posts});
+      }
+      })
+    });
 
+app.get('/post', (req, res) => {
+        res.render('post')
+    });
+// GET /logout
+app.get('/logout', function(req, res, next) {
+   
+    if (req.session) {
+      // delete session object
+      req.session.destroy(function(err) {
+        if(err) {
+          return next(err);
+
+        } else {
+          return res.redirect('/');
+        }
+      });
+    }
+  });
 // Gets the latest images uploaded after a client-specified timestamp
 app.post('/latest', function (req, res, next) {
     const latestImages = [];
@@ -188,11 +214,13 @@ app.post('/latest', function (req, res, next) {
 
 })
 
+
 // Uploads a new images and renders the uploaded page with the new image
 app.post('/upload', imageUpload.single('myFile'), function (req, res, next) {
     
     console.log(req.file);
-    res.render('photos.pug', { title: 'KenzieGram', imagename: `${req.file.filename}` });
+    //res.render('photos.pug', { title: 'KenzieGram', imagename: `${req.file.filename}` });
+    
     let post = {
         image: req.file.key,
         timestamp: Date.now,
@@ -200,37 +228,12 @@ app.post('/upload', imageUpload.single('myFile'), function (req, res, next) {
         caption: req.body.caption,
         comments: [],
     };
-    db.collection('users').findOneAndUpdate({"username": userName }, {$push: {"posts": post} })   
-
-    
-    // // req.file is the `myFile` file
-    // // req.body will hold the text fields, if there were any
-    // // gm starts the graphicsMagick package that edits our uploaded images
-    // gm(`${path}/${req.file.filename}`)
-    //     .resize(200, 200, '!')
-    //     .noProfile()
-    //     .compress("JPEG")
-    //     // Resizes to 300x300 with no regard for aspect ratio, removes EXIF data, then compresses the file to . JPEG
-    //     .write(`${path}/${req.file.filename}`, function (err) {
-    //         // This creates the new file with our modifications
-    //         if (!err) console.log('Image Resized!')
-        
-    //     });
+    db.collection('users').findOneAndUpdate({_id: req.session.userId }, {$push: {"posts": post} })   
+    return res.redirect('/photos');  
 })
-
       
 app.post('/createProfile', imageUpload.single('profilePic'), function (req, res, next) {
-    // The GraphicsMagick module creates a thumbnail image from the uploaded profile picture
-  
-    userName = req.body.name;
-    // gm(`${path}/${req.file.filename}`)
-        // .resize(25, 25, '!')
-        // .noProfile()
-        // .compress('JPEG')
-        // .quality(85)
-        // .write(`${path}/${req.file.filename}`, function (err) {
-        //     if (!err) console.log('Profile Pic Resized!')
-        //     console.log(err)
+
             const instance = new User({
                 username: req.body.name,
                 password: req.body.password,
@@ -249,15 +252,17 @@ app.post('/createProfile', imageUpload.single('profilePic'), function (req, res,
 
 // Endpoint for login instead of creating a new profile
 app.post('/login', (req, res) => {
-    userName = req.body.name;
+    //userName = req.body.name;
     if (req.body.name && req.body.password) {
         User.authenticate(req.body.name, req.body.password, function (error, user) {
           if (error || !user) {
             var err = new Error('Wrong Username or password.');
             err.status = 401;
-            console.log(err)
+            console.log(err);
+            res.render('error', { title: 'KenzieGram', errorMessage: err});
           } else {
             req.session.userId = user._id;
+            console.log("helloooooo---",session.username, session.userId);
             console.log(user.posts);
             res.render('photos', { title: 'KenzieGram', posts: user.posts})
           }
@@ -266,6 +271,7 @@ app.post('/login', (req, res) => {
         var err = new Error('All fields required.');
         err.status = 400;
         console.log(err)
+        res.render('error', { title: 'KenzieGram', errorMessage: err})
       }
   
 })
