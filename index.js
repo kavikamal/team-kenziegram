@@ -160,7 +160,7 @@ app.get('/chat', (req, res) => {
     res.render('chat')
 })
 
-app.get('/post', (req, res) => {
+app.get('/photos', (req, res) => {
     User.findOne({ _id: req.session.userId })
     .exec(function (err, user) {
       if (err) {
@@ -170,11 +170,14 @@ app.get('/post', (req, res) => {
         err.status = 401;
         res.render('error', { title: 'KenzieGram', errorMessage: err})
       }else {
-         res.render('photos', { title: 'KenzieGram', posts: user.posts, userName});
+         res.render('photos', { title: 'KenzieGram', posts: user.posts});
       }
       })
     });
 
+app.get('/post', (req, res) => {
+        res.render('post')
+    });
 // GET /logout
 app.get('/logout', function(req, res, next) {
    
@@ -225,11 +228,9 @@ app.post('/upload', imageUpload.single('myFile'), function (req, res, next) {
         caption: req.body.caption,
         comments: [],
     };
-    db.collection('users').findOneAndUpdate({"username": userName }, {$push: {"posts": post} })   
-    return res.redirect('/profile');
-    
+    db.collection('users').findOneAndUpdate({_id: req.session.userId }, {$push: {"posts": post} })   
+    return res.redirect('/photos');  
 })
-
       
 app.post('/createProfile', upload.single('profilePic'), function (req, res, next) {
     // The GraphicsMagick module creates a thumbnail image from the uploaded profile picture
