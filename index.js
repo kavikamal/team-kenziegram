@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 var session = require('express-session');
 const AWS=require("aws-sdk");
+const gm = require('gm').subClass({ imageMagick: true });
 let userName;
 
 //User can upload image types - (jpg|jpeg|png|gif)
@@ -23,7 +24,6 @@ var storage = multer.diskStorage({
   });
 const upload = multer({storage: storage});
 
-const gm = require('gm').subClass({ imageMagick: true });
 const app = express();
 app.use(express.static('public'));
 app.use(express.json());
@@ -136,7 +136,7 @@ var s3 = new AWS.S3({
         secretAccessKey: IAM_USER_SECRET,
         Bucket: BUCKET_NAME
     })
-    // Adding the uploaded photos to our Amazon S3  bucket
+// Adding the uploaded photos to our Amazon S3  bucket
 var imageUpload = multer({
     storage: multerS3({
         s3: s3,
@@ -190,30 +190,34 @@ app.post('/latest', function (req, res, next) {
 
 // Uploads a new images and renders the uploaded page with the new image
 app.post('/upload', imageUpload.single('myFile'), function (req, res, next) {
-    // req.file is the `myFile` file
-    // req.body will hold the text fields, if there were any
-    // gm starts the graphicsMagick package that edits our uploaded images
-    gm(`${path}/${req.file.filename}`)
-        .resize(200, 200, '!')
-        .noProfile()
-        .compress("JPEG")
-        // Resizes to 300x300 with no regard for aspect ratio, removes EXIF data, then compresses the file to . JPEG
-        .write(`${path}/${req.file.filename}`, function (err) {
-            // This creates the new file with our modifications
-            if (!err) console.log('Image Resized!')
-            console.log(req.file.filename);
-            res.render('photos.pug', { title: 'KenzieGram', imagename: `${req.file.filename}` });
-            })
-            let post = {
-                image: req.file.filename,
-                timestamp: Date.now,
-                // user: req.body.name,
-                caption: req.body.caption,
-                comments: [],
-            };
-            db.collection('users').findOneAndUpdate({"username": userName }, {$push: {"posts": post} })   
+    
+    console.log(req.file);
+    res.render('photos.pug', { title: 'KenzieGram', imagename: `${req.file.filename}` });
+    let post = {
+        image: req.file.key,
+        timestamp: Date.now,
+        // user: req.body.name,
+        caption: req.body.caption,
+        comments: [],
+    };
+    db.collection('users').findOneAndUpdate({"username": userName }, {$push: {"posts": post} })   
+
+    
+    // // req.file is the `myFile` file
+    // // req.body will hold the text fields, if there were any
+    // // gm starts the graphicsMagick package that edits our uploaded images
+    // gm(`${path}/${req.file.filename}`)
+    //     .resize(200, 200, '!')
+    //     .noProfile()
+    //     .compress("JPEG")
+    //     // Resizes to 300x300 with no regard for aspect ratio, removes EXIF data, then compresses the file to . JPEG
+    //     .write(`${path}/${req.file.filename}`, function (err) {
+    //         // This creates the new file with our modifications
+    //         if (!err) console.log('Image Resized!')
         
-        });
+    //     });
+})
+
       
 app.post('/createProfile', upload.single('profilePic'), function (req, res, next) {
     // The GraphicsMagick module creates a thumbnail image from the uploaded profile picture
