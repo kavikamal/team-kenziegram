@@ -188,13 +188,13 @@ main {
     color: #D0021B;
 }
 
-@media only screen and (max-width: 374px){
+@media only screen and (max-width: 379px){
     .logo {
         height: 100%;
         margin-left: 50%;
     }}
 
-@media only screen and (min-width: 375px) and (max-width: 600px){
+@media only screen and (min-width: 380px) and (max-width: 600px){
     .logo {
         height: 100%;
         margin-left: 60%;
@@ -204,4 +204,5 @@ main {
 .logo {
     height: 100%;
     margin-left: 1%;
+    
 }}
