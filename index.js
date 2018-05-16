@@ -24,6 +24,7 @@ var storage = multer.diskStorage({
 const upload = multer({storage: storage});
 
 const gm = require('gm').subClass({ imageMagick: true });
+const AWS = require('aws-sdk');
 const app = express();
 app.use(express.static('public'));
 app.use(express.json());
