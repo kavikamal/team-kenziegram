@@ -5,8 +5,8 @@ const multerS3 = require('multer-s3')
 const fs = require('fs');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-var session = require('express-session')
-const AWS=require("aws-sdk");;
+var session = require('express-session');
+const AWS=require("aws-sdk");
 let userName;
 
 //User can upload image types - (jpg|jpeg|png|gif)
