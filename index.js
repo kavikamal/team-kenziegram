@@ -1,5 +1,7 @@
+
 const express = require('express');
 const multer = require('multer');
+const multerS3 = require('multer-s3')
 const fs = require('fs');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
@@ -123,11 +125,31 @@ userSchema.pre('save', function (next) {
 var User = mongoose.model('User', userSchema);
 
 
+//variables used to access amazon cloud bucket
+const BUCKET_NAME = 'kenziegram';
+const IAM_USER_KEY = 'AKIAJX7IWDTQVEF5BRMA';
+const IAM_USER_SECRET = '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';
+
+var s3 = new AWS.S3({
+        accessKeyId: IAM_USER_KEY,
+        secretAccessKey: IAM_USER_SECRET,
+        Bucket: BUCKET_NAME
+    })
+    // Adding the uploaded photos to our Amazon S3  bucket
+var imageUpload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: 'kenziegram',
+        metadata: function (req,file, cb) {
+            cb(null, Object.assign({}, req.body))
+        }
+    })
+});
+
 // Renders the main page along with all the images
 app.get('/', function (req, res) {  
     fs.readdir(path, function(err, items) {   
-       // res.render('signup', { title: 'Sign-up', success: req.session.success, errors: req.session.errors});
-       res.render('signup', { title: 'Sign-up',  errors: err});
+        res.render('signup',{title: 'KenzieGram'});
     });
 })
 
@@ -166,8 +188,7 @@ app.post('/latest', function (req, res, next) {
 })
 
 // Uploads a new images and renders the uploaded page with the new image
-app.post('/upload', upload.single('myFile'), function (req, res, next) {
-    
+app.post('/upload', imageUpload.single('myFile'), function (req, res, next) {
     // req.file is the `myFile` file
     // req.body will hold the text fields, if there were any
     // gm starts the graphicsMagick package that edits our uploaded images
