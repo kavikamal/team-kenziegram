@@ -12,8 +12,14 @@ html
                     p= typeof msg != 'undefined' ? msg : ''
                     form(method='POST' action='/createProfile' enctype="multipart/form-data")
                         div.form-group
-                            label(for='name') Name:
+                            label(for='name') Username:
                             input#name.form-control(type='text', placeholder='username' name='name' require)
+                        div.form-group
+                            label(for='password') Password:
+                            input#password.form-control(type='password', placeholder='password' name='password' require)
+                        div.form-group
+                            label(for='confirmPassword') Confirm Password:
+                            input#confirmPassword.form-control(type='password', placeholder='confirm password' name='confirmPassword' require)
                         div.file-field.input-field
                             div.btn.kenzie-lightblue
                                 span Upload Profile Picture:
@@ -30,6 +36,10 @@ html
                         div.form-group
                             label(for='name') Name:
                             input#name.form-control(type='text', placeholder='username' name='name' require)
+                        div.form-group
+                            label(for='password') Password:
+                            input#password.form-control(type='password', placeholder='password' name='password' require)
+                        br
                         br
                         button.btn.kenzie-lightblue.btn-primary(type='submit') Login
                         br
