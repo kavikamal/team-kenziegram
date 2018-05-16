@@ -1,8 +1,23 @@
+
 const express = require('express');
 const multer = require('multer');
+const multerS3 = require('multer-s3')
 const fs = require('fs');
 const mongoose = require('mongoose');
 let userName;
+
+const gm = require('gm').subClass({ imageMagick: true });
+//utilizing amazon simple storage to store images in cloud.
+const AWS = require('aws-sdk');
+
+
+const app = express();
+app.use(express.static('public'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.set('views', './views');
+app.set('view engine', 'pug');
 
 //const profilePicUpload = multer({ dest: 'public/profilepictures/'})
 //User can upload image types - (jpg|jpeg|png|gif)
@@ -22,15 +37,7 @@ const upload = multer({storage: storage});
 
 // const upload = multer({ dest: 'public/uploads/' });
 
-const gm = require('gm').subClass({ imageMagick: true });
 
-const app = express();
-app.use(express.static('public'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
-app.set('views', './views');
-app.set('view engine', 'pug');
 
 const dbName = 'kenziegram';
 const DB_USER = 'admin';
@@ -71,15 +78,36 @@ let feedSchema = new Schema({
     posts: Array
 });
 
+
 // Compile User and Feed models from the schemas
 var User = mongoose.model('User', userSchema);
 var Feed = mongoose.model('Feed', feedSchema);
+
+//variables used to access amazon cloud bucket
+const BUCKET_NAME = 'kenziegram';
+const IAM_USER_KEY = 'AKIAJX7IWDTQVEF5BRMA';
+const IAM_USER_SECRET = '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';
+
+var s3 = new AWS.S3({
+        accessKeyId: IAM_USER_KEY,
+        secretAccessKey: IAM_USER_SECRET,
+        Bucket: BUCKET_NAME
+    })
+    // Adding the uploaded photos to our Amazon S3  bucket
+var imageUpload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: 'kenziegram',
+        metadata: function (req,file, cb) {
+            cb(null, Object.assign({}, req.body))
+        }
+    })
+});
 
 // Renders the main page along with all the images
 app.get('/', function (req, res) {  
     fs.readdir(path, function(err, items) {   
         res.render('signup',{title: 'KenzieGram'});
-
     });
 })
 
@@ -113,8 +141,7 @@ app.post('/latest', function (req, res, next) {
 })
 
 // Uploads a new images and renders the uploaded page with the new image
-app.post('/upload', upload.single('myFile'), function (req, res, next) {
-    
+app.post('/upload', imageUpload.single('myFile'), function (req, res, next) {
     // req.file is the `myFile` file
     // req.body will hold the text fields, if there were any
     // gm starts the graphicsMagick package that edits our uploaded images
@@ -131,8 +158,8 @@ app.post('/upload', upload.single('myFile'), function (req, res, next) {
             let post = {
                 image: req.file.filename,
                 timestamp: Date.now,
-                user: req.body.name,
-                caption: req.body.caption,
+                // user: req.body.name,
+                // caption: req.body.caption,
                 comments: [],
             };
             db.collection('users').findOneAndUpdate({"name": userName }, {$push: {posts: post} })   
