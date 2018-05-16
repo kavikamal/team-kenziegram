@@ -4,25 +4,12 @@ const multer = require('multer');
 const multerS3 = require('multer-s3')
 const fs = require('fs');
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+var session = require('express-session')
 let userName;
 
-const gm = require('gm').subClass({ imageMagick: true });
-//utilizing amazon simple storage to store images in cloud.
-const AWS = require('aws-sdk');
-
-
-const app = express();
-app.use(express.static('public'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
-app.set('views', './views');
-app.set('view engine', 'pug');
-
-//const profilePicUpload = multer({ dest: 'public/profilepictures/'})
 //User can upload image types - (jpg|jpeg|png|gif)
 var storage = multer.diskStorage({
-  
     destination: (req, file, cb) => {
       cb(null, 'public/uploads/') 
     },
@@ -35,14 +22,26 @@ var storage = multer.diskStorage({
   });
 const upload = multer({storage: storage});
 
-// const upload = multer({ dest: 'public/uploads/' });
+const gm = require('gm').subClass({ imageMagick: true });
+const app = express();
+app.use(express.static('public'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
+//use sessions for tracking logins
+app.use(session({
+    secret: 'work hard',
+    resave: true,
+    saveUninitialized: false
+  }));
 
+app.set('views', './views');
+app.set('view engine', 'pug');
 
 const dbName = 'kenziegram';
 const DB_USER = 'admin';
 const DB_PASSWORD = 'admin';
-const DB_URI = 'ds053428.mlab.com:53428';  
+const DB_URI = 'ds053428.mlab.com:53428';
 const PORT = process.env.PORT || 3000;
 const path = './public/uploads';
 
@@ -56,11 +55,24 @@ db.on('error', console.error.bind(console, 'connection error: '));
 // Define Schemas 
 const Schema = mongoose.Schema;
 let userSchema = new Schema({
-
-    name: String,
+    username: {
+        type: String,
+        unique: true,
+        required: true,
+        trim: true
+      },
+      password: {
+        type: String,
+        required: true,
+      },
+      passwordConf: {
+        type: String,
+        required: true,
+      },
+    
     profilePic: String,
     messages: [{
-        name: String,
+        username: String,
 
         message: String,
         timestamp: Number,
@@ -68,20 +80,50 @@ let userSchema = new Schema({
     posts: [{
         image: String,
         timestamp: Number,
-        user: String,
+        // user: String,
         caption: String,
         comments: Array,
     }]
+   
+});
 
-});
-let feedSchema = new Schema({
-    posts: Array
-});
+//authenticate input against database
+userSchema.statics.authenticate = function (username, password, callback) {
+    User.findOne({ username: username })
+      .exec(function (err, user) {
+        if (err) {
+          return callback(err)
+        } else if (!user) {
+          var err = new Error('User not found.');
+          err.status = 401;
+          return callback(err);
+        }
+        bcrypt.compare(password, user.password, function (err, result) {
+          if (result === true) {
+            return callback(null, user);
+          } else {
+            return callback();
+          }
+        })
+      });
+  }
+//hashing a password before saving it to the database
+userSchema.pre('save', function (next) {
+    var user = this;
+    bcrypt.hash(user.password, 10, function (err, hash){
+      if (err) {
+        return next(err);
+      }
+      user.password = hash;
+      next();
+    })
+  });
+
 
 
 // Compile User and Feed models from the schemas
 var User = mongoose.model('User', userSchema);
-var Feed = mongoose.model('Feed', feedSchema);
+
 
 //variables used to access amazon cloud bucket
 const BUCKET_NAME = 'kenziegram';
@@ -109,6 +151,11 @@ app.get('/', function (req, res) {
     fs.readdir(path, function(err, items) {   
         res.render('signup',{title: 'KenzieGram'});
     });
+})
+
+app.get('/register', (req, res) => {
+    res.render('signup', { title: 'Sign-up', success: req.session.success, errors: req.session.errors});
+    req.session.errors = null;
 })
 
 app.get('/chat', (req, res) => {
@@ -146,28 +193,30 @@ app.post('/upload', imageUpload.single('myFile'), function (req, res, next) {
     // req.body will hold the text fields, if there were any
     // gm starts the graphicsMagick package that edits our uploaded images
     gm(`${path}/${req.file.filename}`)
-        .resize(300, 300, '!')
+        .resize(200, 200, '!')
         .noProfile()
         .compress("JPEG")
         // Resizes to 300x300 with no regard for aspect ratio, removes EXIF data, then compresses the file to . JPEG
         .write(`${path}/${req.file.filename}`, function (err) {
             // This creates the new file with our modifications
             if (!err) console.log('Image Resized!')
-                res.render('photos.pug', { title: 'KenzieGram', imagename: `resized${req.file.filename}` });
+            console.log(req.file.filename);
+            res.render('photos.pug', { title: 'KenzieGram', imagename: `${req.file.filename}` });
             })
             let post = {
                 image: req.file.filename,
                 timestamp: Date.now,
-                user: req.body.name,
+                // user: req.body.name,
                 caption: req.body.caption,
                 comments: [],
             };
-            db.collection('users').findOneAndUpdate({"name": userName }, {$push: {posts: post} })   
+            db.collection('users').findOneAndUpdate({"username": userName }, {$push: {"posts": post} })   
         
         });
-
+      
 app.post('/createProfile', upload.single('profilePic'), function (req, res, next) {
     // The GraphicsMagick module creates a thumbnail image from the uploaded profile picture
+  
     userName = req.body.name;
     gm(`${path}/${req.file.filename}`)
         .resize(25, 25, '!')
@@ -178,7 +227,9 @@ app.post('/createProfile', upload.single('profilePic'), function (req, res, next
             if (!err) console.log('Profile Pic Resized!')
             console.log(err)
             const instance = new User({
-                name: req.body.name,
+                username: req.body.name,
+                password: req.body.password,
+                passwordConf: req.body.confirmPassword,
                 profilePic: `${req.file.filename}`,
                 messages: [],
                 posts: []
@@ -188,21 +239,31 @@ app.post('/createProfile', upload.single('profilePic'), function (req, res, next
                 .then(instance => res.send())
             res.render('photos.pug', { title: 'KenzieGram', arrayofimages: items, userName: req.body.name });
 
-        })
+        });
+    //}
 });
-
 
 // Endpoint for login instead of creating a new profile
 app.post('/login', (req, res) => {
-    console.log(req.body.name);
     userName = req.body.name;
-    db.collection('users').findOne({ 'name' : userName})
-    .then((user) =>{
-        res.render('photos', { title: 'KenzieGram', posts: user.posts, userName})
-    })
-    .catch((err) =>{
-        res.render('photos', { title: 'KenzieGram', userName})
-    })
+    if (req.body.name && req.body.password) {
+        User.authenticate(req.body.name, req.body.password, function (error, user) {
+          if (error || !user) {
+            var err = new Error('Wrong Username or password.');
+            err.status = 401;
+            console.log(err)
+          } else {
+            req.session.userId = user._id;
+            console.log(user.posts);
+            res.render('photos', { title: 'KenzieGram', posts: user.posts, userName})
+          }
+        });
+      } else {
+        var err = new Error('All fields required.');
+        err.status = 400;
+        console.log(err)
+      }
+  
 })
 
 app.listen(PORT, () => {
