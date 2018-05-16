@@ -191,7 +191,7 @@ app.post('/latest', function (req, res, next) {
 // Uploads a new images and renders the uploaded page with the new image
 app.post('/upload', imageUpload.single('myFile'), function (req, res, next) {
     
-    console.log(req.file.key);
+    console.log(req.file);
     res.render('photos.pug', { title: 'KenzieGram', imagename: `${req.file.filename}` });
     let post = {
         image: req.file.key,
