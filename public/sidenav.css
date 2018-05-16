@@ -206,3 +206,20 @@ main {
     margin-left: 1%;
     
 }}
+
+.kenziephoto {
+    margin: 1em;
+    width: 32vw;
+}
+
+.photowrap {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+}
+
+.squarephoto {
+    object-fit: cover;
+    width: 32vw;
+    height: 32vw;
+}
