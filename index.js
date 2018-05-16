@@ -219,34 +219,33 @@ app.post('/upload', imageUpload.single('myFile'), function (req, res, next) {
 })
 
       
-app.post('/createProfile', upload.single('profilePic'), function (req, res, next) {
+app.post('/createProfile', imageUpload.single('profilePic'), function (req, res, next) {
     // The GraphicsMagick module creates a thumbnail image from the uploaded profile picture
   
     userName = req.body.name;
-    gm(`${path}/${req.file.filename}`)
-        .resize(25, 25, '!')
-        .noProfile()
-        .compress('JPEG')
-        .quality(85)
-        .write(`${path}/${req.file.filename}`, function (err) {
-            if (!err) console.log('Profile Pic Resized!')
-            console.log(err)
+    // gm(`${path}/${req.file.filename}`)
+        // .resize(25, 25, '!')
+        // .noProfile()
+        // .compress('JPEG')
+        // .quality(85)
+        // .write(`${path}/${req.file.filename}`, function (err) {
+        //     if (!err) console.log('Profile Pic Resized!')
+        //     console.log(err)
             const instance = new User({
                 username: req.body.name,
                 password: req.body.password,
                 passwordConf: req.body.confirmPassword,
-                profilePic: `${req.file.filename}`,
+                profilePic: req.file.key, 
                 messages: [],
                 posts: []
             });
-
             instance.save()
                 .then(instance => res.send())
             res.render('photos.pug', { title: 'KenzieGram', arrayofimages: items, userName: req.body.name });
 
         });
     //}
-});
+// });
 
 // Endpoint for login instead of creating a new profile
 app.post('/login', (req, res) => {
@@ -260,7 +259,7 @@ app.post('/login', (req, res) => {
           } else {
             req.session.userId = user._id;
             console.log(user.posts);
-            res.render('photos', { title: 'KenzieGram', posts: user.posts, userName})
+            res.render('photos', { title: 'KenzieGram', posts: user.post, userName})
           }
         });
       } else {
