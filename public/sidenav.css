@@ -223,3 +223,16 @@ main {
     width: 32vw;
     height: 32vw;
 }
+
+@media only screen and (max-width: 992px) {
+    .kenziephoto {
+        margin: 1em;
+        width: 64vw;
+    }
+    
+    .squarephoto {
+        object-fit: cover;
+        width: 64vw;
+        height: 64vw;
+    }
+}
