@@ -11,7 +11,6 @@ const AWS = require("aws-sdk");
 const gm = require('gm').subClass({
   imageMagick: true
 });
-//let userName;
 
 //User can upload image types - (jpg|jpeg|png|gif)
 var storage = multer.diskStorage({
