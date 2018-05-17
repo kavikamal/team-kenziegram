@@ -125,8 +125,8 @@ var User = mongoose.model('User', userSchema);
 
 //variables used to access amazon cloud bucket
 const BUCKET_NAME = 'kenziegram';
-const IAM_USER_KEY = 'AKIAJX7IWDTQVEF5BRMA';
-const IAM_USER_SECRET = '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';
+const IAM_USER_KEY = 'AKIAJ3VRLXCXWCSYLSIQ';
+const IAM_USER_SECRET = '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';
 
 var s3 = new AWS.S3({
         accessKeyId: IAM_USER_KEY,
@@ -252,6 +252,7 @@ app.post('/createProfile', imageUpload.single('profilePic'), function (req, res,
 
 // Endpoint for login instead of creating a new profile
 app.post('/login', (req, res) => {
+    console.log(req.file.key);
     //userName = req.body.name;
     if (req.body.name && req.body.password) {
         User.authenticate(req.body.name, req.body.password, function (error, user) {
