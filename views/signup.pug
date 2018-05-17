@@ -5,44 +5,45 @@ html
         body
             marquee(behavior="alternate" direction="left" scrollamount="3")
                 img(src="https://i.imgur.com/xhKrJGE.jpg" class="scrolling-header")
-            div.container.section.white
-                //- h1.center.kenzie-lightblue Welcome!
-                div.outline
-                    h4.black-text Sign up here:
-                    p= typeof msg != 'undefined' ? msg : ''
-                    form(method='POST' action='/createProfile' enctype='multipart/form-data' id='myForm' /*onsubmit='return validateSignUpForm()'*/)
-                        div.form-group
-                            label(for='name') Username:
-                            input#name.form-control(type='text', placeholder='username' name='name' required)
-                        div.form-group
-                            label(for='password') Password:
-                            input#password.form-control(type='password', placeholder='password' name='password' required)
-                        div.form-group
-                            label(for='confirmPassword') Confirm Password:
-                            input#confirmPassword.form-control(type='password', placeholder='confirm password' name='confirmPassword' required)
-                        div.file-field.input-field
-                            div.btn.kenzie-lightblue
-                                span Upload Profile Picture:
-                                input(type="file", name="profilePic")
-                            div.file-path-wrapper
-                                input.form-control(class="file-path validate", type="text")
-                        button.btn.kenzie-lightblue.btn-primary(type='submit') Create Profile
-            div.container.section.white
-                //- h2.cyan-text.center Already a member?
-                div.outline
-                    h5 Login here:
-                    p= typeof msg != 'undefined' ? msg : ''
-                    form(method='POST' action='/login')
-                        div.form-group
-                            label(for='name') Name:
-                            input#name.form-control(type='text', placeholder='username' name='name' required)
-                        div.form-group
-                            label(for='password') Password:
-                            input#password.form-control(type='password', placeholder='password' name='password' required)
-                        br
-                        br
-                        button.btn.kenzie-lightblue.btn-primary(type='submit') Login
-                        br
-                        br
+            div.homewrapper
+                div.container.section.white.homesection
+                    //- h1.center.kenzie-lightblue Welcome!
+                    div.outline
+                        h4.black-text Sign up here:
+                        p= typeof msg != 'undefined' ? msg : ''
+                        form(method='POST' action='/createProfile' enctype="multipart/form-data")
+                            div.form-group
+                                label(for='name') Username:
+                                input#name.form-control(type='text', placeholder='username' name='name' required)
+                            div.form-group
+                                label(for='password') Password:
+                                input#password.form-control(type='password', placeholder='password' name='password' required)
+                            div.form-group
+                                label(for='confirmPassword') Confirm Password:
+                                input#confirmPassword.form-control(type='password', placeholder='confirm password' name='confirmPassword' required)
+                            div.file-field.input-field
+                                div.btn.kenzie-lightblue
+                                    span Upload Profile Picture:
+                                    input(type="file", name="profilePic")
+                                div.file-path-wrapper
+                                    input.form-control(class="file-path validate", type="text")
+                            button.btn.kenzie-lightblue.btn-primary(type='submit') Create Profile
+                div.container.section.white.homesection
+                    //- h2.cyan-text.center Already a member?
+                    div.outline
+                        h5 Login here:
+                        p= typeof msg != 'undefined' ? msg : ''
+                        form(method='POST' action='/login')
+                            div.form-group
+                                label(for='name') Name:
+                                input#name.form-control(type='text', placeholder='username' name='name' required)
+                            div.form-group
+                                label(for='password') Password:
+                                input#password.form-control(type='password', placeholder='password' name='password' required)
+                            br
+                            br
+                            button.btn.kenzie-lightblue.btn-primary(type='submit') Login
+                            br
+                            br
     footer
         include includes/footer.pug

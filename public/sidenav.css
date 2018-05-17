@@ -224,6 +224,15 @@ main {
     height: 32vw;
 }
 
+.homewrapper {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.homesection {
+    width: 45%;
+}
+
 @media only screen and (max-width: 992px) {
     .kenziephoto {
         margin: 1em;
@@ -234,5 +243,8 @@ main {
         object-fit: cover;
         width: 64vw;
         height: 64vw;
+    }
+    .homesection {
+        width: 90%;
     }
 }
