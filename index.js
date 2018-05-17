@@ -4,13 +4,13 @@ const multerS3 = require('multer-s3')
 const fs = require('fs');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-var session = require('express-session');
-var MongoStore = require('connect-mongo')(session);
+const session = require('express-session');
+const expressValidator = require('express-validator');
+const MongoStore = require('connect-mongo')(session);
 const AWS = require("aws-sdk");
 const gm = require('gm').subClass({
   imageMagick: true
 });
-
 
 //User can upload image types - (jpg|jpeg|png|gif)
 var storage = multer.diskStorage({
@@ -114,9 +114,9 @@ userSchema.pre('save', function (next) {
     next();
   })
 });
-
-
-//use sessions for tracking logins
+// use validator for signup/login form fields
+app.use(expressValidator());
+// use sessions for tracking logins
 app.use(session({
   secret: 'work hard',
   resave: true,
@@ -254,8 +254,18 @@ app.post('/upload', imageUpload.single('myFile'), function (req, res, next) {
   })
   return res.redirect('/photos');
 })
-
 app.post('/createProfile', imageUpload.single('profilePic'), function (req, res, next) {
+  req.check('name', 'Invalid profile name').notEmpty();
+  req.check('password', 'Password is Invalid').notEmpty();
+  req.check('password', 'Passwords Do Not Match').equals(req.body.confirmPassword);
+  const errors = req.validationErrors();
+  if (errors) {
+    req.session.errors = errors;
+    req.session.success = false;
+    console.log(errors);
+  } else {
+    req.session.success = true;
+  }
   const instance = new User({
     username: req.body.name,
     password: req.body.password,
@@ -276,37 +286,38 @@ app.post('/createProfile', imageUpload.single('profilePic'), function (req, res,
 
 // Endpoint for login instead of creating a new profile
 app.post('/login', (req, res) => {
-  if (req.body.name && req.body.password) {
-    User.authenticate(req.body.name, req.body.password, function (error, user) {
-      if (error || !user) {
-        var err = new Error('Wrong Username or password.');
-        err.status = 401;
-        console.log(err);
-        res.render('error', {
-          title: 'KenzieGram',
-          errorMessage: err
-        });
+      req.check('name', 'Invalid profile name').notEmpty();
+      req.check('password', 'Password is Invalid').notEmpty();
+      const errors = req.validationErrors();
+      if (errors) {
+        req.session.errors = errors;
+        req.session.success = false;
+        console.log(errors);
       } else {
-        req.session.userId = user.username;
-        res.render('photos', {
-          title: 'KenzieGram',
-          posts: user.posts
-        })
+        req.session.success = true;
+      }
+      if (req.body.name && req.body.password) {
+        User.authenticate(req.body.name, req.body.password, function (error, user) {
+          if (error || !user) {
+            var err = new Error('Wrong Username or password.');
+            err.status = 401;
+            console.log(err);
+            res.render('error', {
+              title: 'KenzieGram',
+              errorMessage: err
+            });
+          } else {
+            req.session.userId = user.username;
+            res.render('photos', {
+              title: 'KenzieGram',
+              posts: user.posts
+            })
+          }
+        });
       }
     });
-  } else {
-    var err = new Error('All fields required.');
-    err.status = 400;
-    console.log(err)
-    res.render('error', {
-      title: 'KenzieGram',
-      errorMessage: err
-    })
-  }
 
-})
-
-app.listen(PORT, () => {
-  mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
-  console.log(`listening at port ${PORT}`);
-})
+    app.listen(PORT, () => {
+      mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@${DB_URI}/${dbName}`);
+      console.log(`listening at port ${PORT}`)
+    });
