@@ -174,7 +174,7 @@ app.get('/chat', (req, res) => {
 
 app.get('/photos', (req, res) => {
   User.findOne({
-      username: req.session.userId
+      "username": req.session.userId
     })
     .exec(function (err, user) {
       if (err) {
@@ -265,6 +265,7 @@ app.post('/createProfile', imageUpload.single('profilePic'), function (req, res,
   });
   instance.save()
     .then(instance => res.send())
+  req.session.userId = instance.username;   
   res.render('photos.pug', {
     title: 'KenzieGram',
     arrayofimages: items,
