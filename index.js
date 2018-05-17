@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
-const AWS=require("aws-sdk");
+const AWS = require("aws-sdk");
 const gm = require('gm').subClass({ imageMagick: true });
 //let userName;
 
