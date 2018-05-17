@@ -259,6 +259,7 @@ app.post('/createProfile', imageUpload.single('profilePic'), function (req, res,
   req.check('name', 'Invalid profile name').notEmpty();
   req.check('password', 'Password is Invalid').notEmpty();
   req.check('password', 'Passwords Do Not Match').equals(req.body.confirmPassword);
+  const errors = req.validationErrors();
   if (errors) {
     req.session.errors = errors;
     req.session.success = false;
