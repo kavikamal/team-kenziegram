@@ -109,9 +109,9 @@ userSchema.pre('save', function (next) {
       next();
     })
   });
-
+// use validator for signup/login form fields
 app.use(expressValidator());
-//use sessions for tracking logins
+// use sessions for tracking logins
 app.use(session({
     secret: 'work hard',
     resave: true,
@@ -263,6 +263,16 @@ app.post('/createProfile', imageUpload.single('profilePic'), function (req, res,
 
 // Endpoint for login instead of creating a new profile
 app.post('/login', (req, res) => {
+  req.check('name', 'Invalid profile name').notEmpty();
+  req.check('password', 'Password is Invalid').notEmpty();
+  const errors = req.validationErrors();
+  if (errors) {
+      req.session.errors = errors;
+      req.session.success = false;
+      console.log(errors);
+  } else {
+      req.session.success = true;
+  }
     //userName = req.body.name;
     if (req.body.name && req.body.password) {
         User.authenticate(req.body.name, req.body.password, function (error, user) {

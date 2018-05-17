@@ -6,10 +6,10 @@ main
     body
         header
         br
-        div
+        div.outline
             if errorMessage
-                span= errorMessage
+                blockquote= "ʕ•ᴥ•ʔ---" + errorMessage 
             else 
-                span= "Woops! Cannot locate error message."   
+                div= "Woops! Cannot identify error."   
 footer            
     include includes/footer.pug
