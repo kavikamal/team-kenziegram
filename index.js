@@ -125,8 +125,8 @@ var User = mongoose.model('User', userSchema);
 
 //variables used to access amazon cloud bucket
 const BUCKET_NAME = 'kenziegram';
-const IAM_USER_KEY = 'AKIAJX7IWDTQVEF5BRMA';
-const IAM_USER_SECRET = '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';
+const IAM_USER_KEY = 'AKIAJ3VRLXCXWCSYLSIQ';
+const IAM_USER_SECRET = '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';
 
 var s3 = new AWS.S3({
         accessKeyId: IAM_USER_KEY,
@@ -161,7 +161,7 @@ app.get('/chat', (req, res) => {
 })
 
 app.get('/photos', (req, res) => {
-    User.findOne({ _id: req.session.userId })
+    User.findOne({ username: req.session.userId })
     .exec(function (err, user) {
       if (err) {
         return callback(err)
@@ -218,17 +218,17 @@ app.post('/latest', function (req, res, next) {
 // Uploads a new images and renders the uploaded page with the new image
 app.post('/upload', imageUpload.single('myFile'), function (req, res, next) {
     
-    console.log(req.file);
+    console.log(req.session.userId);
     //res.render('photos.pug', { title: 'KenzieGram', imagename: `${req.file.filename}` });
     
     let post = {
-        image: req.file.key,
+        image: req.file.location,
         timestamp: Date.now,
         // user: req.body.name,
         caption: req.body.caption,
         comments: [],
     };
-    db.collection('users').findOneAndUpdate({_id: req.session.userId }, {$push: {"posts": post} })   
+    db.collection('users').findOneAndUpdate({ "username": req.session.userId }, {$push: {"posts": post} })   
     return res.redirect('/photos');  
 })
       
@@ -238,7 +238,7 @@ app.post('/createProfile', imageUpload.single('profilePic'), function (req, res,
                 username: req.body.name,
                 password: req.body.password,
                 passwordConf: req.body.confirmPassword,
-                profilePic: req.file.key, 
+                profilePic: req.file.location, 
                 messages: [],
                 posts: []
             });
@@ -261,7 +261,7 @@ app.post('/login', (req, res) => {
             console.log(err);
             res.render('error', { title: 'KenzieGram', errorMessage: err});
           } else {
-            req.session.userId = user._id;
+            req.session.userId = user.username;
             console.log("helloooooo---",session.username, session.userId);
             console.log(user.posts);
             res.render('photos', { title: 'KenzieGram', posts: user.posts})
