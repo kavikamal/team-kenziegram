@@ -16,21 +16,6 @@ function validateForm(){
     }
 }
 
-// function validateSignUpForm(){
-//     let nameField = document.forms["myForm"]["name"].value;
-//     let pwdField = document.forms["myForm"]["password"].value;
-//     let confirmPwdField = document.forms["myForm"]["password"].value;
-//     if (nameField == "") {
-//         alert("Name must be filled out ʕ•ᴥ•ʔ");
-//         return false;
-//     } else if (pwdField == "") {
-//         alert("Password must be entered ʕ•ᴥ•ʔ");
-//         return false;
-//     } else if (confirmPwdField == "") {
-//         alert("Password must be confirmed ʕ•ᴥ•ʔ")
-//     }
-// }
-
 // Displays message on main page
 function setMessage(str){
     let messageEl = document.getElementById("message");
