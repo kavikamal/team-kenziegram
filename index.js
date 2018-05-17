@@ -5,8 +5,9 @@ const multerS3 = require('multer-s3')
 const fs = require('fs');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-var session = require('express-session');
-var MongoStore = require('connect-mongo')(session);
+const session = require('express-session');
+const expressValidator = require('express-validator');
+const MongoStore = require('connect-mongo')(session);
 const AWS = require("aws-sdk");
 const gm = require('gm').subClass({ imageMagick: true });
 //let userName;
@@ -109,7 +110,7 @@ userSchema.pre('save', function (next) {
     })
   });
 
-
+app.use(expressValidator());
 //use sessions for tracking logins
 app.use(session({
     secret: 'work hard',
@@ -233,7 +234,17 @@ app.post('/upload', imageUpload.single('myFile'), function (req, res, next) {
 })
       
 app.post('/createProfile', imageUpload.single('profilePic'), function (req, res, next) {
-
+  req.check('name', 'Invalid profile name').notEmpty();
+  req.check('password', 'Password is Invalid').notEmpty();
+  req.check('password', 'Passwords Do Not Match').equals(req.body.confirmPassword);
+  const errors = req.validationErrors();
+  if (errors) {
+      req.session.errors = errors;
+      req.session.success = false;
+      console.log(errors);
+  } else {
+      req.session.success = true;
+  }
             const instance = new User({
                 username: req.body.name,
                 password: req.body.password,

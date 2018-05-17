@@ -10,16 +10,16 @@ html
                 div.outline
                     h4.black-text Sign up here:
                     p= typeof msg != 'undefined' ? msg : ''
-                    form(method='POST' action='/createProfile' enctype="multipart/form-data")
+                    form(method='POST' action='/createProfile' enctype='multipart/form-data' id='myForm' /*onsubmit='return validateSignUpForm()'*/)
                         div.form-group
                             label(for='name') Username:
-                            input#name.form-control(type='text', placeholder='username' name='name' require)
+                            input#name.form-control(type='text', placeholder='username' name='name' required)
                         div.form-group
                             label(for='password') Password:
-                            input#password.form-control(type='password', placeholder='password' name='password' require)
+                            input#password.form-control(type='password', placeholder='password' name='password' required)
                         div.form-group
                             label(for='confirmPassword') Confirm Password:
-                            input#confirmPassword.form-control(type='password', placeholder='confirm password' name='confirmPassword' require)
+                            input#confirmPassword.form-control(type='password', placeholder='confirm password' name='confirmPassword' required)
                         div.file-field.input-field
                             div.btn.kenzie-lightblue
                                 span Upload Profile Picture:
@@ -35,10 +35,10 @@ html
                     form(method='POST' action='/login')
                         div.form-group
                             label(for='name') Name:
-                            input#name.form-control(type='text', placeholder='username' name='name' require)
+                            input#name.form-control(type='text', placeholder='username' name='name' required)
                         div.form-group
                             label(for='password') Password:
-                            input#password.form-control(type='password', placeholder='password' name='password' require)
+                            input#password.form-control(type='password', placeholder='password' name='password' required)
                         br
                         br
                         button.btn.kenzie-lightblue.btn-primary(type='submit') Login
